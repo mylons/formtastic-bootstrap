@@ -18,6 +18,4 @@ module FormtasticBootstrap
   # autoload :Actions, "formtastic-bootstrap/actions"
   # autoload :LocalizedString
   # autoload :Localizer
-  # autoload :Util
-
 end

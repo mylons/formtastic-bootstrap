@@ -15,17 +15,11 @@ module FormtasticBootstrap
           else
             options[:error_class] || builder.default_block_error_class
           end
-          template.content_tag(:span, Formtastic::Util.html_safe(errors.to_sentence.html_safe), :class => error_class)
+          template.content_tag(:span, errors.to_sentence.html_safe, :class => error_class)
         end
 
         def error_list_html(ignore)
           super()
-          # error_class = options[:error_class] || builder.default_error_list_class
-          # list_elements = []
-          # errors.each do |error|
-          #   list_elements << template.content_tag(:li, Formtastic::Util.html_safe(error.html_safe))
-          # end
-          # template.content_tag(:ul, Formtastic::Util.html_safe(list_elements.join("\n")), :class => error_class)
         end
 
         def error_first_html(inline_or_block = :inline)
@@ -34,7 +28,7 @@ module FormtasticBootstrap
           else
             options[:error_class] || builder.default_block_error_class
           end
-          template.content_tag(:span, Formtastic::Util.html_safe(errors.first.untaint), :class => error_class)
+          template.content_tag(:span, errors.first.untaint.html_safe, :class => error_class)
         end
 
         def error_none_html(ignore)

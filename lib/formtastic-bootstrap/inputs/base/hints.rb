@@ -14,7 +14,7 @@ module FormtasticBootstrap
             end
             template.content_tag(
               :span,
-              Formtastic::Util.html_safe(hint_text),
+              hint_text.html_safe,
               :class => hint_class
             )
           end

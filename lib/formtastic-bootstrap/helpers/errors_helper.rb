@@ -61,7 +61,7 @@ module FormtasticBootstrap
         template.content_tag(:div, html_options) do
           template.content_tag(:a, "&times;".html_safe, :class => "close", "data-dismiss" => "alert") +
           template.content_tag(:ul, {:class => "error-list"}) do
-            Formtastic::Util.html_safe(full_errors.map { |error| template.content_tag(:li, Formtastic::Util.html_safe(error)) }.join)
+            full_errors.map { |error| template.content_tag(:li, error.html_safe) }.join.html_safe
           end
         end
       end
