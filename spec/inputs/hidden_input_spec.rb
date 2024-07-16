@@ -1,12 +1,12 @@
 # encoding: utf-8
 require 'spec_helper'
 
-describe 'hidden input' do
+RSpec.describe 'hidden input' do
 
   include FormtasticSpecHelper
 
   before do
-    @output_buffer = ''
+@output_buffer = ActionView::OutputBuffer.new
     mock_everything
 
     with_deprecation_silenced do
@@ -27,26 +27,31 @@ describe 'hidden input' do
   it_should_not_have_a_label
 
   it "should generate a input field" do
-    output_buffer.should have_tag("form div.form-group span.form-wrapper input#post_secret")
-    output_buffer.should have_tag("form div.form-group span.form-wrapper input#post_secret[@type=\"hidden\"]")
-    output_buffer.should have_tag("form div.form-group span.form-wrapper input#post_secret[@name=\"post[secret]\"]")
+    output_doc = output_buffer_to_nokogiri(output_buffer)
+    output_doc.should have_tag("form div.form-group span.form-wrapper input#post_secret")
+    output_doc.should have_tag("form div.form-group span.form-wrapper input#post_secret[@type=\"hidden\"]")
+    output_doc.should have_tag("form div.form-group span.form-wrapper input#post_secret[@name=\"post[secret]\"]")
   end
 
   it "should get value from the object" do
-    output_buffer.should have_tag("form div.form-group span.form-wrapper input#post_secret[@type=\"hidden\"][@value=\"1\"]")
+    output_doc = output_buffer_to_nokogiri(output_buffer)
+    output_doc.should have_tag("form div.form-group span.form-wrapper input#post_secret[@type=\"hidden\"][@value=\"1\"]")
   end
 
   # Handle Formtastic :input_html options for consistency.
   it "should pass any explicitly specified value - using :input_html options" do
-    output_buffer.should have_tag("form div.form-group span.form-wrapper input#post_published[@type=\"hidden\"][@value=\"true\"]")
+    output_doc = output_buffer_to_nokogiri(output_buffer)
+    output_doc.should have_tag("form div.form-group span.form-wrapper input#post_published[@type=\"hidden\"][@value=\"true\"]")
   end
 
   it "should pass any option specified using :input_html" do
-    output_buffer.should have_tag("form div.form-group span.form-wrapper input#new_post_reviewer[@type=\"hidden\"][@class=\"new_post_reviewer\"]")
+    output_doc = output_buffer_to_nokogiri(output_buffer)
+    output_doc.should have_tag("form div.form-group span.form-wrapper input#new_post_reviewer[@type=\"hidden\"][@class=\"new_post_reviewer\"]")
   end
 
   it "should prefer :input_html over directly supplied options" do
-    output_buffer.should have_tag("form div.form-group span.form-wrapper input#post_author_id[@type=\"hidden\"][@value=\"formtastic_value\"]")
+    output_doc = output_buffer_to_nokogiri(output_buffer)
+    output_doc.should have_tag("form div.form-group span.form-wrapper input#post_author_id[@type=\"hidden\"][@value=\"formtastic_value\"]")
   end
 
   it "should not render inline errors" do
@@ -58,8 +63,9 @@ describe 'hidden input' do
       concat(builder.input(:secret, :as => :hidden))
     end)
 
-    output_buffer.should_not have_tag("form div.form-group span.form-wrapper p.inline-errors")
-    output_buffer.should_not have_tag("form div.form-group span.form-wrapper ul.errors")
+    output_doc = output_buffer_to_nokogiri(output_buffer)
+    output_doc.should_not have_tag("form div.form-group span.form-wrapper p.inline-errors")
+    output_doc.should_not have_tag("form div.form-group span.form-wrapper ul.errors")
   end
 
   it "should not render inline hints" do
@@ -67,14 +73,15 @@ describe 'hidden input' do
       concat(builder.input(:secret, :as => :hidden, :hint => "all your base are belong to use"))
     end)
 
-    output_buffer.should_not have_tag("form div.form-group span.form-wrapper p.inline-hints")
-    output_buffer.should_not have_tag("form div.form-group span.form-wrapper ul.hints")
+    output_doc = output_buffer_to_nokogiri(output_buffer)
+    output_doc.should_not have_tag("form div.form-group span.form-wrapper p.inline-hints")
+    output_doc.should_not have_tag("form div.form-group span.form-wrapper ul.hints")
   end
 
   describe "when namespace is provided" do
 
     before do
-      @output_buffer = ''
+@output_buffer = ActionView::OutputBuffer.new
       mock_everything
 
       with_deprecation_silenced do
@@ -102,7 +109,7 @@ describe 'hidden input' do
   describe "when index is provided" do
 
     before do
-      @output_buffer = ''
+@output_buffer = ActionView::OutputBuffer.new
       mock_everything
 
       concat(semantic_form_for(@new_post) do |builder|
@@ -113,15 +120,18 @@ describe 'hidden input' do
     end
 
     it 'should index the id of the control group' do
-      output_buffer.should have_tag("div.form-group#post_author_attributes_3_name_input")
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag("div.form-group#post_author_attributes_3_name_input")
     end
 
     it 'should index the id of the select tag' do
-      output_buffer.should have_tag("input#post_author_attributes_3_name")
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag("input#post_author_attributes_3_name")
     end
 
     it 'should index the name of the select tag' do
-      output_buffer.should have_tag("input[@name='post[author_attributes][3][name]']")
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag("input[@name='post[author_attributes][3][name]']")
     end
 
   end
@@ -132,7 +142,8 @@ describe 'hidden input' do
       concat(semantic_form_for(@new_post) do |builder|
         concat(builder.input(:title, :as => :hidden, :required => true))
       end)
-      output_buffer.should_not have_tag("input[@required]")
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should_not have_tag("input[@required]")
     end
   end
 
@@ -141,7 +152,8 @@ describe 'hidden input' do
       concat(semantic_form_for(@new_post) do |builder|
         concat(builder.input(:title, :as => :hidden, :input_html => {:autofocus => true}))
       end)
-      output_buffer.should_not have_tag("input[@autofocus]")
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should_not have_tag("input[@autofocus]")
     end
   end
 

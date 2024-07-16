@@ -1,12 +1,12 @@
 # encoding: utf-8
 require 'spec_helper'
 
-describe 'FormtasticBootstrap::FormBuilder#action' do
+RSpec.describe 'FormtasticBootstrap::FormBuilder#action' do
 
   include FormtasticSpecHelper
 
   before do
-    @output_buffer = ''
+@output_buffer = ActionView::OutputBuffer.new
     mock_everything
   end
 
@@ -32,21 +32,24 @@ describe 'FormtasticBootstrap::FormBuilder#action' do
           concat(semantic_form_for(:project, :url => 'http://test.host') do |builder|
             concat(builder.action(:submit))
           end)
-          output_buffer.should have_tag('form input.btn', :count => 1)
+          output_doc = output_buffer_to_nokogiri(output_buffer)
+          output_doc.should have_tag('form input.btn', :count => 1)
         end
 
         it 'should default to a button for reset' do
           concat(semantic_form_for(:project, :url => 'http://test.host') do |builder|
             concat(builder.action(:reset))
           end)
-          output_buffer.should have_tag('form input.btn', :count => 1)
+          output_doc = output_buffer_to_nokogiri(output_buffer)
+          output_doc.should have_tag('form input.btn', :count => 1)
         end
 
         it 'should default to a link for cancel' do
           concat(semantic_form_for(:project, :url => 'http://test.host') do |builder|
             concat(builder.action(:cancel))
           end)
-          output_buffer.should have_tag('form a.btn', :count => 1)
+          output_doc = output_buffer_to_nokogiri(output_buffer)
+          output_doc.should have_tag('form a.btn', :count => 1)
         end
       end
 

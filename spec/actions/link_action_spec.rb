@@ -1,12 +1,12 @@
 # encoding: utf-8
 require 'spec_helper'
 
-describe 'LinkAction', 'when cancelling' do
+RSpec.describe 'LinkAction', 'when cancelling' do
 
   include FormtasticSpecHelper
 
   before do
-    @output_buffer = ''
+@output_buffer = ActionView::OutputBuffer.new
     mock_everything
   end
 
@@ -18,7 +18,8 @@ describe 'LinkAction', 'when cancelling' do
     end
 
     it 'should render a submit type of input' do
-      output_buffer.should have_tag('a[@href="javascript:history.back()"].btn')
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag('a[@href="javascript:history.back()"].btn')
     end
 
   end
@@ -32,7 +33,8 @@ describe 'LinkAction', 'when cancelling' do
     end
 
     it 'should render a submit type of input' do
-      output_buffer.should have_tag('a[@href="http://foo.bah/baz"].btn')
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag('a[@href="http://foo.bah/baz"].btn')
     end
 
   end
@@ -46,19 +48,20 @@ describe 'LinkAction', 'when cancelling' do
     end
 
     it 'should render a submit type of input' do
-      output_buffer.should have_tag('a[@href="/mock/path"].btn')
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag('a[@href="/mock/path"].btn')
     end
 
   end
 
 end
 
-describe 'LinkAction', 'when submitting' do
+RSpec.describe 'LinkAction', 'when submitting' do
 
   include FormtasticSpecHelper
 
   before do
-    @output_buffer = ''
+@output_buffer = ActionView::OutputBuffer.new
     mock_everything
   end
 
@@ -72,12 +75,12 @@ describe 'LinkAction', 'when submitting' do
 
 end
 
-describe 'LinkAction', 'when submitting' do
+RSpec.describe 'LinkAction', 'when submitting' do
 
   include FormtasticSpecHelper
 
   before do
-    @output_buffer = ''
+@output_buffer = ActionView::OutputBuffer.new
     mock_everything
   end
 

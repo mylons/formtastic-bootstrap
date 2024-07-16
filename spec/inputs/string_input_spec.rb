@@ -1,12 +1,12 @@
 # encoding: utf-8
 require 'spec_helper'
 
-describe 'string input' do
+RSpec.describe 'string input' do
 
   include FormtasticSpecHelper
 
   before do
-    @output_buffer = ''
+@output_buffer = ActionView::OutputBuffer.new
     mock_everything
   end
 
@@ -54,8 +54,8 @@ describe 'string input' do
           concat(semantic_form_for(@new_post) do |builder|
             concat(builder.input(:title))
           end)
-
-          output_buffer.should have_tag("form div.form-group span.form-wrapper input##{@new_post.class.name.underscore}_title[@maxlength='#{maxlength}']")
+          output_doc = output_buffer_to_nokogiri(output_buffer)
+          output_doc.should have_tag("form div.form-group span.form-wrapper input##{@new_post.class.name.underscore}_title[@maxlength='#{maxlength}']")
         end
 
         it 'should have maxlength if the optional :if or :unless options are not supplied' do
@@ -121,7 +121,7 @@ describe 'string input' do
   describe "when index is provided" do
 
     before do
-      @output_buffer = ''
+@output_buffer = ActionView::OutputBuffer.new
       mock_everything
 
       concat(semantic_form_for(@new_post) do |builder|
@@ -132,15 +132,18 @@ describe 'string input' do
     end
 
     it 'should index the id of the wrapper' do
-      output_buffer.should have_tag("div#post_author_attributes_3_name_input")
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag("div#post_author_attributes_3_name_input")
     end
 
     it 'should index the id of the select tag' do
-      output_buffer.should have_tag("input#post_author_attributes_3_name")
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag("input#post_author_attributes_3_name")
     end
 
     it 'should index the name of the select tag' do
-      output_buffer.should have_tag("input[@name='post[author_attributes][3][name]']")
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag("input[@name='post[author_attributes][3][name]']")
     end
 
   end
@@ -168,7 +171,8 @@ describe 'string input' do
     end
 
     it "should have no size attribute" do
-      output_buffer.should_not have_tag("input[@size]")
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should_not have_tag("input[@size]")
     end
   end
 
@@ -180,7 +184,8 @@ describe 'string input' do
           concat(semantic_form_for(@new_post) do |builder|
             concat(builder.input(:title, :as => :string, :required => true))
           end)
-          output_buffer.should have_tag("input[@required]")
+          output_doc = output_buffer_to_nokogiri(output_buffer)
+          output_doc.should have_tag("input[@required]")
         end
       end
     end
@@ -191,7 +196,8 @@ describe 'string input' do
           concat(semantic_form_for(@new_post) do |builder|
             concat(builder.input(:title, :as => :string, :required => true))
           end)
-          output_buffer.should_not have_tag("input[@required]")
+          output_doc = output_buffer_to_nokogiri(output_buffer)
+          output_doc.should_not have_tag("input[@required]")
         end
       end
     end

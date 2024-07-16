@@ -1,12 +1,12 @@
 # encoding: utf-8
 require 'spec_helper'
 
-describe 'FormtasticBootstrap::FormBuilder#input' do
+RSpec.describe 'FormtasticBootstrap::FormBuilder#input' do
 
   include FormtasticSpecHelper
 
   before do
-    @output_buffer = ''
+@output_buffer = ActionView::OutputBuffer.new
     mock_everything
 
     @errors = double('errors')
@@ -37,8 +37,9 @@ describe 'FormtasticBootstrap::FormBuilder#input' do
             concat(semantic_form_for(@new_post) do |builder|
               concat(builder.input(:title, :required => true))
             end)
-            output_buffer.should_not have_tag('form div.optional')
-            output_buffer.should have_tag('form div.required')
+            output_doc = output_buffer_to_nokogiri(output_buffer)
+            output_doc.should_not have_tag('form div.optional')
+            output_doc.should have_tag('form div.required')
           end
         end
 
@@ -47,7 +48,8 @@ describe 'FormtasticBootstrap::FormBuilder#input' do
             concat(semantic_form_for(@new_post) do |builder|
               concat(builder.input(:title, :required => true))
             end)
-            output_buffer.should have_tag('form div.required label', /required yo/)
+            output_doc = output_buffer_to_nokogiri(output_buffer)
+            output_doc.should have_tag('form div.required label', /required yo/)
           end
         end
       end
@@ -67,8 +69,9 @@ describe 'FormtasticBootstrap::FormBuilder#input' do
           concat(semantic_form_for(@new_post) do |builder|
             concat(builder.input(:title, :required => false))
           end)
-          output_buffer.should_not have_tag('form div.required')
-          output_buffer.should have_tag('form div.optional')
+          output_doc = output_buffer_to_nokogiri(output_buffer)
+          output_doc.should_not have_tag('form div.required')
+          output_doc.should have_tag('form div.optional')
         end
 
         it 'should set and "optional" class also when there is presence validator' do
@@ -78,15 +81,17 @@ describe 'FormtasticBootstrap::FormBuilder#input' do
           concat(semantic_form_for(@new_post) do |builder|
             concat(builder.input(:title, :required => false))
           end)
-          output_buffer.should_not have_tag('form div.required')
-          output_buffer.should have_tag('form div.optional')
+          output_doc = output_buffer_to_nokogiri(output_buffer)
+          output_doc.should_not have_tag('form div.required')
+          output_doc.should have_tag('form div.optional')
         end
 
         it 'should append the "optional" string to the label' do
           concat(semantic_form_for(@new_post) do |builder|
             concat(builder.input(:title, :required => false))
           end)
-          output_buffer.should have_tag('form div.optional label', /#{@string}$/)
+          output_doc = output_buffer_to_nokogiri(output_buffer)
+          output_doc.should have_tag('form div.optional label', /#{@string}$/)
         end
 
       end
@@ -102,8 +107,9 @@ describe 'FormtasticBootstrap::FormBuilder#input' do
             concat(semantic_form_for(:project, :url => 'http://test.host/') do |builder|
               concat(builder.input(:title))
             end)
-            output_buffer.should_not have_tag('form div.required')
-            output_buffer.should have_tag('form div.optional')
+            output_doc = output_buffer_to_nokogiri(output_buffer)
+            output_doc.should_not have_tag('form div.required')
+            output_doc.should have_tag('form div.optional')
 
             Formtastic::FormBuilder.all_fields_required_by_default = true
           end
@@ -133,8 +139,9 @@ describe 'FormtasticBootstrap::FormBuilder#input' do
                 concat(builder.input(:title))
                 concat(builder.input(:body))
               end)
-              output_buffer.should have_tag('form div.required')
-              output_buffer.should_not have_tag('form div.optional')
+              output_doc = output_buffer_to_nokogiri(output_buffer)
+              output_doc.should have_tag('form div.required')
+              output_doc.should_not have_tag('form div.optional')
             end
 
             it 'should be required when there is :on => :create option on create' do
@@ -145,8 +152,9 @@ describe 'FormtasticBootstrap::FormBuilder#input' do
                 concat(semantic_form_for(@new_post) do |builder|
                   concat(builder.input(:title))
                 end)
-                output_buffer.should have_tag('form div.required')
-                output_buffer.should_not have_tag('form div.optional')
+                output_doc = output_buffer_to_nokogiri(output_buffer)
+                output_doc.should have_tag('form div.required')
+                output_doc.should_not have_tag('form div.optional')
               end
             end
 
@@ -158,8 +166,9 @@ describe 'FormtasticBootstrap::FormBuilder#input' do
                 concat(semantic_form_for(@new_post) do |builder|
                   concat(builder.input(:title))
                 end)
-                output_buffer.should have_tag('form div.required')
-                output_buffer.should_not have_tag('form div.optional')
+                output_doc = output_buffer_to_nokogiri(output_buffer)
+                output_doc.should have_tag('form div.required')
+                output_doc.should_not have_tag('form div.optional')
               end
             end
 
@@ -171,8 +180,9 @@ describe 'FormtasticBootstrap::FormBuilder#input' do
                 concat(semantic_form_for(@fred) do |builder|
                   concat(builder.input(:login))
                 end)
-                output_buffer.should have_tag('form div.required')
-                output_buffer.should_not have_tag('form div.optional')
+                output_doc = output_buffer_to_nokogiri(output_buffer)
+                output_doc.should have_tag('form div.required')
+                output_doc.should_not have_tag('form div.optional')
               end
             end
 
@@ -183,8 +193,9 @@ describe 'FormtasticBootstrap::FormBuilder#input' do
               concat(semantic_form_for(@fred) do |builder|
                 concat(builder.input(:login))
               end)
-              output_buffer.should_not have_tag('form div.required')
-              output_buffer.should have_tag('form div.optional')
+              output_doc = output_buffer_to_nokogiri(output_buffer)
+              output_doc.should_not have_tag('form div.required')
+              output_doc.should have_tag('form div.optional')
             end
 
             it 'should not be required when there is :on => :update option on create' do
@@ -194,8 +205,9 @@ describe 'FormtasticBootstrap::FormBuilder#input' do
               concat(semantic_form_for(@new_post) do |builder|
                 concat(builder.input(:title))
               end)
-              output_buffer.should_not have_tag('form div.required')
-              output_buffer.should have_tag('form div.optional')
+              output_doc = output_buffer_to_nokogiri(output_buffer)
+              output_doc.should_not have_tag('form div.required')
+              output_doc.should have_tag('form div.optional')
             end
 
             it 'should be not be required if the optional :if condition is not satisifed' do
@@ -299,12 +311,13 @@ describe 'FormtasticBootstrap::FormBuilder#input' do
               concat(builder.input(options[:tag]))
             end)
 
+            output_doc = output_buffer_to_nokogiri(output_buffer)
             if options[:required]
-              output_buffer.should_not have_tag('form div.optional')
-              output_buffer.should have_tag('form div.required')
+              output_doc.should_not have_tag('form div.optional')
+              output_doc.should have_tag('form div.required')
             else
-              output_buffer.should have_tag('form div.optional')
-              output_buffer.should_not have_tag('form div.required')
+              output_doc.should have_tag('form div.optional')
+              output_doc.should_not have_tag('form div.required')
             end
           end
 
@@ -328,8 +341,9 @@ describe 'FormtasticBootstrap::FormBuilder#input' do
               concat(semantic_form_for(@new_post) do |builder|
                 concat(builder.input(:title))
               end)
-              output_buffer.should_not have_tag('form div.required')
-              output_buffer.should have_tag('form div.optional')
+              output_doc = output_buffer_to_nokogiri(output_buffer)
+              output_doc.should_not have_tag('form div.required')
+              output_doc.should have_tag('form div.optional')
             end
           end
 
@@ -344,8 +358,9 @@ describe 'FormtasticBootstrap::FormBuilder#input' do
               concat(semantic_form_for(@new_post) do |builder|
                 concat(builder.input(:title))
               end)
-              output_buffer.should_not have_tag('form div.required')
-              output_buffer.should have_tag('form div.optional')
+              output_doc = output_buffer_to_nokogiri(output_buffer)
+              output_doc.should_not have_tag('form div.required')
+              output_doc.should have_tag('form div.optional')
 
               Formtastic::FormBuilder.all_fields_required_by_default = true
             end
@@ -364,7 +379,8 @@ describe 'FormtasticBootstrap::FormBuilder#input' do
           concat(semantic_form_for(:project, :url => 'http://test.host') do |builder|
             concat(builder.input(:anything))
           end)
-          output_buffer.should have_tag('form div.string')
+          output_doc = output_buffer_to_nokogiri(output_buffer)
+          output_doc.should have_tag('form div.string')
         end
 
         it 'should default to password for forms without objects if column is password' do
@@ -373,7 +389,8 @@ describe 'FormtasticBootstrap::FormBuilder#input' do
             concat(builder.input(:password_confirmation))
             concat(builder.input(:confirm_password))
           end)
-          output_buffer.should have_tag('form div.password', :count => 3)
+          output_doc = output_buffer_to_nokogiri(output_buffer)
+          output_doc.should have_tag('form div.password', :count => 3)
         end
 
         it 'should default to a string for methods on objects that don\'t respond to "column_for_attribute"' do
@@ -517,21 +534,24 @@ describe 'FormtasticBootstrap::FormBuilder#input' do
           concat(semantic_form_for(@new_post) do |builder|
             concat(builder.input(:title, :label => "Kustom"))
           end)
-          output_buffer.should have_tag("form div label", /Kustom/)
+          output_doc = output_buffer_to_nokogiri(output_buffer)
+          output_doc.should have_tag("form div label", /Kustom/)
         end
 
         it 'should not generate a label if false' do
           concat(semantic_form_for(@new_post) do |builder|
             concat(builder.input(:title, :label => false))
           end)
-          output_buffer.should_not have_tag("form div label")
+          output_doc = output_buffer_to_nokogiri(output_buffer)
+          output_doc.should_not have_tag("form div label")
         end
 
         it 'should be dupped if frozen' do
           concat(semantic_form_for(@new_post) do |builder|
             concat(builder.input(:title, :label => "Kustom".freeze))
           end)
-          output_buffer.should have_tag("form div label", /Kustom/)
+          output_doc = output_buffer_to_nokogiri(output_buffer)
+          output_doc.should have_tag("form div label", /Kustom/)
         end
       end
 
@@ -553,7 +573,8 @@ describe 'FormtasticBootstrap::FormBuilder#input' do
                   concat(semantic_form_for(@new_post) do |builder|
                     concat(builder.input(:meta_description))
                   end)
-                  output_buffer.should have_tag('form div label', /Localized title/)
+                  output_doc = output_buffer_to_nokogiri(output_buffer)
+                  output_doc.should have_tag('form div label', /Localized title/)
                 end
               end
             end
@@ -568,7 +589,8 @@ describe 'FormtasticBootstrap::FormBuilder#input' do
                 concat(semantic_form_for(:project, :url => 'http://test.host') do |builder|
                   concat(builder.input(:meta_description))
                 end)
-                output_buffer.should have_tag("form div label", /#{'meta_description'.humanize}/)
+                output_doc = output_buffer_to_nokogiri(output_buffer)
+                output_doc.should have_tag("form div label", /#{'meta_description'.humanize}/)
               end
             end
           end
@@ -581,7 +603,8 @@ describe 'FormtasticBootstrap::FormBuilder#input' do
               concat(semantic_form_for(@new_post) do |builder|
                 concat(builder.input(:meta_description))
               end)
-              output_buffer.should have_tag("form div label", /#{'meta_description'.humanize}/)
+              output_doc = output_buffer_to_nokogiri(output_buffer)
+              output_doc.should have_tag("form div label", /#{'meta_description'.humanize}/)
             end
           end
 
@@ -593,7 +616,8 @@ describe 'FormtasticBootstrap::FormBuilder#input' do
                 concat(semantic_form_for(@new_post) do |builder|
                   concat(builder.input(:meta_description))
                 end)
-                output_buffer.should have_tag("form div label", /#{'meta_description'.capitalize}/)
+                output_doc = output_buffer_to_nokogiri(output_buffer)
+                output_doc.should have_tag("form div label", /#{'meta_description'.capitalize}/)
               end
             end
           end
@@ -622,7 +646,8 @@ describe 'FormtasticBootstrap::FormBuilder#input' do
                 concat(builder.input(:title, :label => true))
                 concat(builder.input(:published, :as => :boolean, :label => true))
               end)
-              output_buffer.should have_tag('form div label', Regexp.new('^' + @localized_label_text))
+              output_doc = output_buffer_to_nokogiri(output_buffer)
+              output_doc.should have_tag('form div label', Regexp.new('^' + @localized_label_text))
             end
           end
 
@@ -641,7 +666,8 @@ describe 'FormtasticBootstrap::FormBuilder#input' do
                 concat(builder.input(:title, :label => true))
                 concat(builder.input(:published, :as => :boolean, :label => true))
               end)
-              output_buffer.should have_tag('form div label', Regexp.new('^' + @default_localized_label_text))
+              output_doc = output_buffer_to_nokogiri(output_buffer)
+              output_doc.should have_tag('form div label', Regexp.new('^' + @default_localized_label_text))
             end
           end
         end
@@ -658,7 +684,8 @@ describe 'FormtasticBootstrap::FormBuilder#input' do
           concat(semantic_form_for(@new_post) do |builder|
             concat(builder.input(:title, :hint => hint_text))
           end)
-          output_buffer.should have_tag("form div span.help-block", hint_text)
+          output_doc = output_buffer_to_nokogiri(output_buffer)
+          output_doc.should have_tag("form div span.help-block", hint_text)
         end
 
 				it 'should have a custom hint class if I ask for one' do
@@ -667,7 +694,8 @@ describe 'FormtasticBootstrap::FormBuilder#input' do
             concat(semantic_form_for(@new_post) do |builder|
               concat(builder.input(:title, :hint => hint_text, :hint_class => 'custom-hint-class'))
             end)
-            output_buffer.should have_tag("form div span.custom-hint-class", hint_text)
+            output_doc = output_buffer_to_nokogiri(output_buffer)
+            output_doc.should have_tag("form div span.custom-hint-class", hint_text)
           end
         end
         context "defaults" do
@@ -683,7 +711,8 @@ describe 'FormtasticBootstrap::FormBuilder#input' do
             concat(semantic_form_for(@new_post) do |builder|
               concat(builder.input(:title, :hint => hint_text))
             end)
-            output_buffer.should have_tag("form div span.custom-hint-class", hint_text)
+            output_doc = output_buffer_to_nokogiri(output_buffer)
+            output_doc.should have_tag("form div span.custom-hint-class", hint_text)
           end
         end
       end
@@ -719,7 +748,8 @@ describe 'FormtasticBootstrap::FormBuilder#input' do
                 concat(semantic_form_for(@new_post) do |builder|
                   concat(builder.input(:title, :hint => true))
                 end)
-                output_buffer.should have_tag('form div span.help-block', @localized_hint_text)
+                output_doc = output_buffer_to_nokogiri(output_buffer)
+                output_doc.should have_tag('form div span.help-block', @localized_hint_text)
               end
             end
 
@@ -738,7 +768,8 @@ describe 'FormtasticBootstrap::FormBuilder#input' do
                     concat(builder.input(:title, :hint => true, :hint_class => 'custom-hint-class'))
                   end)
                 end
-                output_buffer.should have_tag('form div span.custom-hint-class', @localized_hint_text)
+                output_doc = output_buffer_to_nokogiri(output_buffer)
+                output_doc.should have_tag('form div span.custom-hint-class', @localized_hint_text)
               end
             end
 
@@ -747,7 +778,8 @@ describe 'FormtasticBootstrap::FormBuilder#input' do
                 concat(semantic_form_for(@new_post) do |builder|
                   concat(builder.input(:title, :hint => true))
                 end)
-                output_buffer.should have_tag('form div span.help-block', @default_localized_hint_text)
+                output_doc = output_buffer_to_nokogiri(output_buffer)
+                output_doc.should have_tag('form div span.help-block', @default_localized_hint_text)
               end
             end
           end
@@ -758,7 +790,8 @@ describe 'FormtasticBootstrap::FormBuilder#input' do
                 concat(semantic_form_for(@new_post) do |builder|
                   concat(builder.input(:title, :hint => false))
                 end)
-                output_buffer.should_not have_tag('form div span.help-block', @localized_hint_text)
+                output_doc = output_buffer_to_nokogiri(output_buffer)
+                output_doc.should_not have_tag('form div span.help-block', @localized_hint_text)
               end
             end
           end
@@ -778,7 +811,8 @@ describe 'FormtasticBootstrap::FormBuilder#input' do
               semantic_form_for(@new_post) do |builder|
                 concat(builder.input(:title, :hint => true))
               end
-              output_buffer.should_not have_tag('form div p.inline-hints', @localized_hint_text)
+              output_doc = output_buffer_to_nokogiri(output_buffer)
+              output_doc.should_not have_tag('form div p.inline-hints', @localized_hint_text)
             end
           end
         end
@@ -789,7 +823,8 @@ describe 'FormtasticBootstrap::FormBuilder#input' do
               concat(semantic_form_for(@new_post) do |builder|
                 concat(builder.input(:title))
               end)
-              output_buffer.should_not have_tag('form div p.inline-hints')
+              output_doc = output_buffer_to_nokogiri(output_buffer)
+              output_doc.should_not have_tag('form div p.inline-hints')
             end
           end
         end
@@ -804,25 +839,28 @@ describe 'FormtasticBootstrap::FormBuilder#input' do
           concat(semantic_form_for(@new_post) do |builder|
             concat(builder.input(:title, :wrapper_html => {:id => :another_id}))
           end)
-          output_buffer.should have_tag("form div#another_id")
+          output_doc = output_buffer_to_nokogiri(output_buffer)
+          output_doc.should have_tag("form div#another_id")
         end
 
         it 'should append given classes to div default classes' do
           concat(semantic_form_for(@new_post) do |builder|
             concat(builder.input(:title, :wrapper_html => {:class => :another_class}, :required => true))
           end)
-          output_buffer.should have_tag("form div.string")
-          output_buffer.should have_tag("form div.required")
-          output_buffer.should have_tag("form div.another_class")
+          output_doc = output_buffer_to_nokogiri(output_buffer)
+          output_doc.should have_tag("form div.string")
+          output_doc.should have_tag("form div.required")
+          output_doc.should have_tag("form div.another_class")
         end
 
         it 'should allow classes to be an array' do
           concat(semantic_form_for(@new_post) do |builder|
             concat(builder.input(:title, :wrapper_html => {:class => [ :my_class, :another_class ]}))
           end)
-          output_buffer.should have_tag("form div.string")
-          output_buffer.should have_tag("form div.my_class")
-          output_buffer.should have_tag("form div.another_class")
+          output_doc = output_buffer_to_nokogiri(output_buffer)
+          output_doc.should have_tag("form div.string")
+          output_doc.should have_tag("form div.my_class")
+          output_doc.should have_tag("form div.another_class")
         end
       end
 
@@ -831,8 +869,9 @@ describe 'FormtasticBootstrap::FormBuilder#input' do
           concat(semantic_form_for(@new_post) do |builder|
             concat(builder.input(:title))
           end)
-          output_buffer.should have_tag("form div#post_title_input")
-          output_buffer.should have_tag("form div.string")
+          output_doc = output_buffer_to_nokogiri(output_buffer)
+          output_doc.should have_tag("form div#post_title_input")
+          output_doc.should have_tag("form div.string")
         end
       end
 
@@ -874,7 +913,8 @@ describe 'FormtasticBootstrap::FormBuilder#input' do
         concat(builder.input(:title, my_options))
         concat(builder.input(:publish_at, my_options))
       end)
-      output_buffer.should have_tag 'div.string', :count => 2
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag 'div.string', :count => 2
     end
 
 

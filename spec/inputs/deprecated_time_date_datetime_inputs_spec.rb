@@ -1,10 +1,10 @@
 require 'spec_helper'
 
-describe 'deprecated time, datetime and date inputs' do
+RSpec.describe 'deprecated time, datetime and date inputs' do
   include FormtasticSpecHelper
 
   before do
-    @output_buffer = ''
+@output_buffer = ActionView::OutputBuffer.new
     mock_everything
   end
 
@@ -37,12 +37,13 @@ describe 'deprecated time, datetime and date inputs' do
         concat(f.input :created_at, :as => :date)
       end)
     end
-    output_buffer.should have_tag('div.form-group.time')
-    output_buffer.should have_tag('div.form-group.datetime')
-    output_buffer.should have_tag('div.form-group.date')
-    output_buffer.should_not have_tag('li.time_select')
-    output_buffer.should_not have_tag('li.datetime_select')
-    output_buffer.should_not have_tag('li.date_select')
+    output_doc = output_buffer_to_nokogiri(output_buffer)
+    output_doc.should have_tag('div.form-group.time')
+    output_doc.should have_tag('div.form-group.datetime')
+    output_doc.should have_tag('div.form-group.date')
+    output_doc.should_not have_tag('li.time_select')
+    output_doc.should_not have_tag('li.datetime_select')
+    output_doc.should_not have_tag('li.date_select')
   end
 
 end

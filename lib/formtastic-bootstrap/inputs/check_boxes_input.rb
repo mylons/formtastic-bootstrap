@@ -17,8 +17,7 @@ module FormtasticBootstrap
 
       def choice_html(choice)
         checkbox_wrapping do
-          template.content_tag(:label,
-            hidden_fields? ?
+          template.content_tag(:label, options[:hidden_fields] ?
               check_box_with_hidden_input(choice) :
               check_box_without_hidden_input(choice) <<
             choice_label(choice),
@@ -34,6 +33,11 @@ module FormtasticBootstrap
           template.capture(&block).html_safe,
           :class => class_name
         )
+      end
+
+      def choice_label(choice)
+        label = choice.is_a?(Array) ? choice.first : choice
+        template.content_tag(:span, ERB::Util.html_escape(label.to_s))
       end
 
     end

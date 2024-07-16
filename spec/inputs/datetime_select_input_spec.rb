@@ -1,12 +1,12 @@
 # encoding: utf-8
 require 'spec_helper'
 
-describe 'datetime select input' do
+RSpec.describe 'datetime select input' do
 
   include FormtasticSpecHelper
 
   before do
-    @output_buffer = ''
+@output_buffer = ActionView::OutputBuffer.new
     mock_everything
   end
 
@@ -14,7 +14,7 @@ describe 'datetime select input' do
 
     before do
       ::I18n.backend.store_translations :en, {}
-      output_buffer.replace ''
+      @output_buffer = ActionView::OutputBuffer.new
       concat(semantic_form_for(@new_post) do |builder|
         concat(builder.input(:publish_at, :as => :datetime_select))
       end)
@@ -27,18 +27,20 @@ describe 'datetime select input' do
     it_should_apply_error_logic_for_input_type(:datetime_select)
 
     it 'should have a legend and label with the label text inside the fieldset' do
-      output_buffer.should have_tag('form div.form-group.datetime_select label.control-label', /Publish at/)
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag('form div.form-group.datetime_select label.control-label', /Publish at/)
     end
 
     it 'should have five selects' do
-      output_buffer.should have_tag('form div.form-group.datetime_select span.form-wrapper select', :count => 5)
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag('form div.form-group.datetime_select span.form-wrapper select', :count => 5)
     end
   end
 
   describe "when namespace is provided" do
 
     before do
-      output_buffer.replace ''
+      @output_buffer = ActionView::OutputBuffer.new
       concat(semantic_form_for(@new_post, :namespace => "context2") do |builder|
         concat(builder.input(:publish_at, :as => :datetime_select))
       end)
@@ -56,7 +58,7 @@ describe 'datetime select input' do
   describe "when index is provided" do
 
     before do
-      @output_buffer = ''
+@output_buffer = ActionView::OutputBuffer.new
       mock_everything
 
       concat(semantic_form_for(@new_post) do |builder|
@@ -67,23 +69,26 @@ describe 'datetime select input' do
     end
 
     it 'should index the id of the form-group' do
-      output_buffer.should have_tag("div.form-group#post_author_attributes_3_created_at_input")
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag("div.form-group#post_author_attributes_3_created_at_input")
     end
 
     it 'should index the id of the select tag' do
-      output_buffer.should have_tag("select#post_author_attributes_3_created_at_1i")
-      output_buffer.should have_tag("select#post_author_attributes_3_created_at_2i")
-      output_buffer.should have_tag("select#post_author_attributes_3_created_at_3i")
-      output_buffer.should have_tag("select#post_author_attributes_3_created_at_4i")
-      output_buffer.should have_tag("select#post_author_attributes_3_created_at_5i")
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag("select#post_author_attributes_3_created_at_1i")
+      output_doc.should have_tag("select#post_author_attributes_3_created_at_2i")
+      output_doc.should have_tag("select#post_author_attributes_3_created_at_3i")
+      output_doc.should have_tag("select#post_author_attributes_3_created_at_4i")
+      output_doc.should have_tag("select#post_author_attributes_3_created_at_5i")
     end
 
     it 'should index the name of the select tag' do
-      output_buffer.should have_tag("select[@name='post[author_attributes][3][created_at(1i)]']")
-      output_buffer.should have_tag("select[@name='post[author_attributes][3][created_at(2i)]']")
-      output_buffer.should have_tag("select[@name='post[author_attributes][3][created_at(3i)]']")
-      output_buffer.should have_tag("select[@name='post[author_attributes][3][created_at(4i)]']")
-      output_buffer.should have_tag("select[@name='post[author_attributes][3][created_at(5i)]']")
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag("select[@name='post[author_attributes][3][created_at(1i)]']")
+      output_doc.should have_tag("select[@name='post[author_attributes][3][created_at(2i)]']")
+      output_doc.should have_tag("select[@name='post[author_attributes][3][created_at(3i)]']")
+      output_doc.should have_tag("select[@name='post[author_attributes][3][created_at(4i)]']")
+      output_doc.should have_tag("select[@name='post[author_attributes][3][created_at(5i)]']")
     end
 
   end
@@ -104,7 +109,8 @@ describe 'datetime select input' do
         concat(semantic_form_for(@new_post) do |builder|
           concat(builder.input(:title, :as => :datetime_select, :required => true))
         end)
-        output_buffer.should have_tag("select[@required]", :count => 5)
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should have_tag("select[@required]", :count => 5)
       end
     end
   end

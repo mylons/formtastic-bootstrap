@@ -1,19 +1,19 @@
 # encoding: utf-8
 require 'spec_helper'
 
-describe 'time select input' do
+RSpec.describe 'time select input' do
 
   include FormtasticSpecHelper
 
   before do
-    @output_buffer = ''
+    @output_buffer = ActionView::OutputBuffer.new
     mock_everything
   end
 
   describe "general" do
     before do
       ::I18n.backend.reload!
-      output_buffer.replace ''
+      @output_buffer = ActionView::OutputBuffer.new
     end
 
     describe "with :ignore_date => true" do
@@ -24,14 +24,16 @@ describe 'time select input' do
       end
 
       it 'should not have hidden inputs for day, month and year' do
-        output_buffer.should_not have_tag('input#post_publish_at_1i')
-        output_buffer.should_not have_tag('input#post_publish_at_2i')
-        output_buffer.should_not have_tag('input#post_publish_at_3i')
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should_not have_tag('input#post_publish_at_1i')
+        output_doc.should_not have_tag('input#post_publish_at_2i')
+        output_doc.should_not have_tag('input#post_publish_at_3i')
       end
 
       it 'should have an input for hour and minute' do
-        output_buffer.should have_tag('select#post_publish_at_4i')
-        output_buffer.should have_tag('select#post_publish_at_5i')
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should have_tag('select#post_publish_at_4i')
+        output_doc.should have_tag('select#post_publish_at_5i')
       end
     end
 
@@ -44,17 +46,19 @@ describe 'time select input' do
       end
 
       it 'should have a hidden input for day, month and year' do
-        output_buffer.should have_tag('input#post_publish_at_1i')
-        output_buffer.should have_tag('input#post_publish_at_2i')
-        output_buffer.should have_tag('input#post_publish_at_3i')
-        output_buffer.should have_tag('input#post_publish_at_1i[@value="2010"]')
-        output_buffer.should have_tag('input#post_publish_at_2i[@value="11"]')
-        output_buffer.should have_tag('input#post_publish_at_3i[@value="7"]')
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should have_tag('input#post_publish_at_1i')
+        output_doc.should have_tag('input#post_publish_at_2i')
+        output_doc.should have_tag('input#post_publish_at_3i')
+        output_doc.should have_tag('input#post_publish_at_1i[@value="2010"]')
+        output_doc.should have_tag('input#post_publish_at_2i[@value="11"]')
+        output_doc.should have_tag('input#post_publish_at_3i[@value="7"]')
       end
 
       it 'should have an select for hour and minute' do
-        output_buffer.should have_tag('select#post_publish_at_4i')
-        output_buffer.should have_tag('select#post_publish_at_5i')
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should have_tag('select#post_publish_at_4i')
+        output_doc.should have_tag('select#post_publish_at_5i')
       end
 
     end
@@ -68,14 +72,16 @@ describe 'time select input' do
       end
 
       it 'should have a hidden input for day, month and year' do
-        output_buffer.should have_tag('input#post_publish_at_1i[type="hidden"]')
-        output_buffer.should have_tag('input#post_publish_at_2i[type="hidden"]')
-        output_buffer.should have_tag('input#post_publish_at_3i[type="hidden"]')
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should have_tag('input#post_publish_at_1i[type="hidden"]')
+        output_doc.should have_tag('input#post_publish_at_2i[type="hidden"]')
+        output_doc.should have_tag('input#post_publish_at_3i[type="hidden"]')
       end
 
       it 'should have an select for hour and minute' do
-        output_buffer.should have_tag('select#post_publish_at_4i')
-        output_buffer.should have_tag('select#post_publish_at_5i')
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should have_tag('select#post_publish_at_4i')
+        output_doc.should have_tag('select#post_publish_at_5i')
       end
 
     end
@@ -94,11 +100,13 @@ describe 'time select input' do
       it_should_apply_error_logic_for_input_type(:time_select)
 
       it 'should have a legend and label with the label text inside the fieldset' do
-        output_buffer.should have_tag('form div.form-group.time_select label.control-label', /Publish at/)
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should have_tag('form div.form-group.time_select label.control-label', /Publish at/)
       end
 
       it 'should have two selects for hour and minute' do
-        output_buffer.should have_tag('form div.form-group.time_select span.form-wrapper select', :count => 2)
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should have_tag('form div.form-group.time_select span.form-wrapper select', :count => 2)
       end
     end
 
@@ -110,7 +118,8 @@ describe 'time select input' do
       end
 
       it 'should have three selects for hour, minute and seconds' do
-        output_buffer.should have_tag('form div.form-group.time_select span.form-wrapper select', :count => 3)
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should have_tag('form div.form-group.time_select span.form-wrapper select', :count => 3)
       end
     end
   end
@@ -129,9 +138,10 @@ describe 'time select input' do
     end
 
     it 'should have a tag matching the namespace' do
-      output_buffer.should have_tag('#form2_post_publish_at_input')
-      output_buffer.should have_tag('#form2_post_publish_at_4i')
-      output_buffer.should have_tag('#form2_post_publish_at_5i')
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag('#form2_post_publish_at_input')
+      output_doc.should have_tag('#form2_post_publish_at_4i')
+      output_doc.should have_tag('#form2_post_publish_at_5i')
     end
   end
 
@@ -149,7 +159,8 @@ describe 'time select input' do
         concat(semantic_form_for(@new_post) do |builder|
           concat(builder.input(:title, :as => :time_select, :required => true))
         end)
-        output_buffer.should have_tag("select[@required]", :count => 2)
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should have_tag("select[@required]", :count => 2)
       end
     end
   end
@@ -165,23 +176,26 @@ describe 'time select input' do
     end
 
     it 'should index the id of the form-group' do
-      output_buffer.should have_tag("div.form-group#post_author_attributes_3_created_at_input")
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag("div.form-group#post_author_attributes_3_created_at_input")
     end
 
     it 'should index the id of the select tag' do
-      output_buffer.should have_tag("input#post_author_attributes_3_created_at_1i")
-      output_buffer.should have_tag("input#post_author_attributes_3_created_at_2i")
-      output_buffer.should have_tag("input#post_author_attributes_3_created_at_3i")
-      output_buffer.should have_tag("select#post_author_attributes_3_created_at_4i")
-      output_buffer.should have_tag("select#post_author_attributes_3_created_at_5i")
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag("input#post_author_attributes_3_created_at_1i")
+      output_doc.should have_tag("input#post_author_attributes_3_created_at_2i")
+      output_doc.should have_tag("input#post_author_attributes_3_created_at_3i")
+      output_doc.should have_tag("select#post_author_attributes_3_created_at_4i")
+      output_doc.should have_tag("select#post_author_attributes_3_created_at_5i")
     end
 
     it 'should index the name of the select tag' do
-      output_buffer.should have_tag("input[@name='post[author_attributes][3][created_at(1i)]']")
-      output_buffer.should have_tag("input[@name='post[author_attributes][3][created_at(2i)]']")
-      output_buffer.should have_tag("input[@name='post[author_attributes][3][created_at(3i)]']")
-      output_buffer.should have_tag("select[@name='post[author_attributes][3][created_at(4i)]']")
-      output_buffer.should have_tag("select[@name='post[author_attributes][3][created_at(5i)]']")
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag("input[@name='post[author_attributes][3][created_at(1i)]']")
+      output_doc.should have_tag("input[@name='post[author_attributes][3][created_at(2i)]']")
+      output_doc.should have_tag("input[@name='post[author_attributes][3][created_at(3i)]']")
+      output_doc.should have_tag("select[@name='post[author_attributes][3][created_at(4i)]']")
+      output_doc.should have_tag("select[@name='post[author_attributes][3][created_at(5i)]']")
     end
 
   end

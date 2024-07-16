@@ -1,12 +1,12 @@
 # encoding: utf-8
 require 'spec_helper'
 
-describe 'time_zone input' do
+RSpec.describe 'time_zone input' do
 
   include FormtasticSpecHelper
 
   before do
-    @output_buffer = ''
+    @output_buffer = ActionView::OutputBuffer.new
     mock_everything
 
     concat(semantic_form_for(@new_post) do |builder|
@@ -21,28 +21,31 @@ describe 'time_zone input' do
   it_should_apply_error_logic_for_input_type(:time_zone)
 
   it 'should generate a label for the input' do
-    output_buffer.should have_tag('form div.form-group label.control-label')
-    output_buffer.should have_tag('form div.form-group label.control-label[@for="post_time_zone"]')
-    output_buffer.should have_tag('form div.form-group label.control-label', /Time zone/)
+    output_doc = output_buffer_to_nokogiri(output_buffer)
+    output_doc.should have_tag('form div.form-group label.control-label')
+    output_doc.should have_tag('form div.form-group label.control-label[@for="post_time_zone"]')
+    output_doc.should have_tag('form div.form-group label.control-label', /Time zone/)
   end
 
   it "should generate a select" do
-    output_buffer.should have_tag("form div.form-group span.form-wrapper select")
-    output_buffer.should have_tag("form div.form-group span.form-wrapper select#post_time_zone")
-    output_buffer.should have_tag("form div.form-group span.form-wrapper select[@name=\"post[time_zone]\"]")
+    output_doc = output_buffer_to_nokogiri(output_buffer)
+    output_doc.should have_tag("form div.form-group span.form-wrapper select")
+    output_doc.should have_tag("form div.form-group span.form-wrapper select#post_time_zone")
+    output_doc.should have_tag("form div.form-group span.form-wrapper select[@name=\"post[time_zone]\"]")
   end
 
   it 'should use input_html to style inputs' do
     concat(semantic_form_for(@new_post) do |builder|
       concat(builder.input(:time_zone, :input_html => { :class => 'myclass' }))
     end)
-    output_buffer.should have_tag("form div.form-group span.form-wrapper select.myclass")
+    output_doc = output_buffer_to_nokogiri(output_buffer)
+    output_doc.should have_tag("form div.form-group span.form-wrapper select.myclass")
   end
 
   describe "when namespace is provided" do
 
     before do
-      @output_buffer = ''
+      @output_buffer = ActionView::OutputBuffer.new
       mock_everything
 
       concat(semantic_form_for(@new_post, :namespace => 'context2') do |builder|
@@ -59,7 +62,7 @@ describe 'time_zone input' do
   describe "when index is provided" do
 
     before do
-      @output_buffer = ''
+      @output_buffer = ActionView::OutputBuffer.new
       mock_everything
 
       concat(semantic_form_for(@new_post) do |builder|
@@ -70,15 +73,18 @@ describe 'time_zone input' do
     end
 
     it 'should index the id of the control group' do
-      output_buffer.should have_tag("div.form-group#post_author_attributes_3_name_input")
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag("div.form-group#post_author_attributes_3_name_input")
     end
 
     it 'should index the id of the select tag' do
-      output_buffer.should have_tag("select#post_author_attributes_3_name")
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag("select#post_author_attributes_3_name")
     end
 
     it 'should index the name of the select tag' do
-      output_buffer.should have_tag("select[@name='post[author_attributes][3][name]']")
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag("select[@name='post[author_attributes][3][name]']")
     end
 
   end
@@ -92,15 +98,17 @@ describe 'time_zone input' do
     end
 
     it 'should generate labels' do
-      output_buffer.should have_tag('form div.form-group label.control-label')
-      output_buffer.should have_tag('form div.form-group label.control-label[@for="project_time_zone"]')
-      output_buffer.should have_tag('form div.form-group label.control-label', /Time zone/)
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag('form div.form-group label.control-label')
+      output_doc.should have_tag('form div.form-group label.control-label[@for="project_time_zone"]')
+      output_doc.should have_tag('form div.form-group label.control-label', /Time zone/)
     end
 
     it 'should generate select inputs' do
-      output_buffer.should have_tag("form div.form-group span.form-wrapper select")
-      output_buffer.should have_tag("form div.form-group span.form-wrapper select#project_time_zone")
-      output_buffer.should have_tag("form div.form-group span.form-wrapper select[@name=\"project[time_zone]\"]")
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag("form div.form-group span.form-wrapper select")
+      output_doc.should have_tag("form div.form-group span.form-wrapper select#project_time_zone")
+      output_doc.should have_tag("form div.form-group span.form-wrapper select[@name=\"project[time_zone]\"]")
     end
   end
 
@@ -110,7 +118,8 @@ describe 'time_zone input' do
         concat(semantic_form_for(@new_post) do |builder|
           concat(builder.input(:title, :as => :time_zone, :required => true))
         end)
-        output_buffer.should have_tag("select[@required]")
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should have_tag("select[@required]")
       end
     end
   end

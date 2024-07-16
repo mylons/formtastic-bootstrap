@@ -1,12 +1,12 @@
 # encoding: utf-8
 require 'spec_helper'
 
-describe 'ButtonAction', 'when submitting' do
+RSpec.describe 'ButtonAction', 'when submitting' do
 
   include FormtasticSpecHelper
 
   before do
-    @output_buffer = ''
+@output_buffer = ActionView::OutputBuffer.new
     mock_everything
 
     concat(semantic_form_for(@new_post) do |builder|
@@ -15,17 +15,18 @@ describe 'ButtonAction', 'when submitting' do
   end
 
   it 'should render a submit type of button' do
-    output_buffer.should have_tag('button[@type="submit"].btn')
+    output_doc = output_buffer_to_nokogiri(output_buffer)
+    output_doc.should have_tag('button[@type="submit"].btn')
   end
 
 end
 
-describe 'ButtonAction', 'when resetting' do
+RSpec.describe 'ButtonAction', 'when resetting' do
 
   include FormtasticSpecHelper
 
   before do
-    @output_buffer = ''
+@output_buffer = ActionView::OutputBuffer.new
     mock_everything
 
     concat(semantic_form_for(@new_post) do |builder|
@@ -34,21 +35,23 @@ describe 'ButtonAction', 'when resetting' do
   end
 
   it 'should render a reset type of button' do
-    output_buffer.should have_tag('button[@type="reset"].btn', :text => "Reset Post")
+    output_doc = output_buffer_to_nokogiri(output_buffer)
+    output_doc.should have_tag('button[@type="reset"].btn', :text => "Reset Post")
   end
 
   it 'should not render a value attribute' do
-    output_buffer.should_not have_tag('button[@value].btn')
+    output_doc = output_buffer_to_nokogiri(output_buffer)
+    output_doc.should_not have_tag('button[@value].btn')
   end
 
 end
 
-describe 'InputAction', 'when cancelling' do
+RSpec.describe 'InputAction', 'when cancelling' do
 
   include FormtasticSpecHelper
 
   before do
-    @output_buffer = ''
+@output_buffer = ActionView::OutputBuffer.new
     mock_everything
   end
 

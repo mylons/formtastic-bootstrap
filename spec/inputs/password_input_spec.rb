@@ -1,12 +1,12 @@
 # encoding: utf-8
 require 'spec_helper'
 
-describe 'password input' do
+RSpec.describe 'password input' do
 
   include FormtasticSpecHelper
 
   before do
-    @output_buffer = ''
+@output_buffer = ActionView::OutputBuffer.new
     mock_everything
 
     concat(semantic_form_for(@new_post) do |builder|
@@ -61,7 +61,7 @@ describe 'password input' do
   describe "when index is provided" do
 
     before do
-      @output_buffer = ''
+@output_buffer = ActionView::OutputBuffer.new
       mock_everything
 
       concat(semantic_form_for(@new_post) do |builder|
@@ -72,15 +72,18 @@ describe 'password input' do
     end
 
     it 'should index the id of the form-group' do
-      output_buffer.should have_tag("div.form-group#post_author_attributes_3_name_input")
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag("div.form-group#post_author_attributes_3_name_input")
     end
 
     it 'should index the id of the select tag' do
-      output_buffer.should have_tag("input#post_author_attributes_3_name")
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag("input#post_author_attributes_3_name")
     end
 
     it 'should index the name of the select tag' do
-      output_buffer.should have_tag("input[@name='post[author_attributes][3][name]']")
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag("input[@name='post[author_attributes][3][name]']")
     end
 
   end
@@ -92,7 +95,8 @@ describe 'password input' do
         concat(semantic_form_for(@new_post) do |builder|
           concat(builder.input(:title, :as => :password, :required => true))
         end)
-        output_buffer.should have_tag("input[@required]")
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should have_tag("input[@required]")
       end
     end
   end

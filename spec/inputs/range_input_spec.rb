@@ -1,12 +1,12 @@
 # encoding: utf-8
 require 'spec_helper'
 
-describe 'range input' do
+RSpec.describe 'range input' do
 
   include FormtasticSpecHelper
 
   before do
-    @output_buffer = ''
+@output_buffer = ActionView::OutputBuffer.new
     mock_everything
   end
 
@@ -47,7 +47,7 @@ describe 'range input' do
   describe "when index is provided" do
 
     before do
-      @output_buffer = ''
+@output_buffer = ActionView::OutputBuffer.new
       mock_everything
 
       concat(semantic_form_for(@new_post) do |builder|
@@ -58,15 +58,18 @@ describe 'range input' do
     end
 
     it 'should index the id of the form-group' do
-      output_buffer.should have_tag("div.form-group#post_author_attributes_3_name_input")
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag("div.form-group#post_author_attributes_3_name_input")
     end
 
     it 'should index the id of the select tag' do
-      output_buffer.should have_tag("input#post_author_attributes_3_name")
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag("input#post_author_attributes_3_name")
     end
 
     it 'should index the name of the select tag' do
-      output_buffer.should have_tag("input[@name='post[author_attributes][3][name]']")
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag("input[@name='post[author_attributes][3][name]']")
     end
 
   end
@@ -83,28 +86,32 @@ describe 'range input' do
       concat(semantic_form_for(@new_post) do |builder|
         builder.input(:title, :as => :range, :input_html => { :min => 5 })
       end)
-      output_buffer.should have_tag('input[@min="5"]')
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag('input[@min="5"]')
     end
 
     it "should allow :input_html to override :min through :in" do
       concat(semantic_form_for(@new_post) do |builder|
         builder.input(:title, :as => :range, :input_html => { :in => 5..102 })
       end)
-      output_buffer.should have_tag('input[@min="5"]')
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag('input[@min="5"]')
     end
 
     it "should allow options to override :min" do
       concat(semantic_form_for(@new_post) do |builder|
         builder.input(:title, :as => :range, :min => 5)
       end)
-      output_buffer.should have_tag('input[@min="5"]')
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag('input[@min="5"]')
     end
 
     it "should allow options to override :min through :in" do
       concat(semantic_form_for(@new_post) do |builder|
         builder.input(:title, :as => :range, :in => 5..102)
       end)
-      output_buffer.should have_tag('input[@min="5"]')
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag('input[@min="5"]')
     end
 
     describe "and the column is an integer" do
@@ -116,7 +123,8 @@ describe 'range input' do
         concat(semantic_form_for(@new_post) do |builder|
           builder.input(:title, :as => :range)
         end)
-        output_buffer.should have_tag('input[@min="3"]')
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should have_tag('input[@min="3"]')
       end
     end
 
@@ -161,28 +169,32 @@ describe 'range input' do
       concat(semantic_form_for(@new_post) do |builder|
         builder.input(:title, :as => :range, :input_html => { :min => 5 })
       end)
-      output_buffer.should have_tag('input[@min="5"]')
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag('input[@min="5"]')
     end
 
     it "should allow options to override :min" do
       concat(semantic_form_for(@new_post) do |builder|
         builder.input(:title, :as => :range, :min => 5)
       end)
-      output_buffer.should have_tag('input[@min="5"]')
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag('input[@min="5"]')
     end
 
     it "should allow :input_html to override :min with :in" do
       concat(semantic_form_for(@new_post) do |builder|
         builder.input(:title, :as => :range, :input_html => { :in => 5..102 })
       end)
-      output_buffer.should have_tag('input[@min="5"]')
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag('input[@min="5"]')
     end
 
     it "should allow options to override :min  with :in" do
       concat(semantic_form_for(@new_post) do |builder|
         builder.input(:title, :as => :range, :in => 5..102)
       end)
-      output_buffer.should have_tag('input[@min="5"]')
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag('input[@min="5"]')
     end
 
 
@@ -196,7 +208,8 @@ describe 'range input' do
           concat(semantic_form_for(@new_post) do |builder|
             builder.input(:title, :as => :range)
           end)
-          output_buffer.should have_tag('input[@min="2"]')
+          output_doc = output_buffer_to_nokogiri(output_buffer)
+          output_doc.should have_tag('input[@min="2"]')
         end
       end
     end
@@ -210,7 +223,8 @@ describe 'range input' do
         concat(semantic_form_for(@new_post) do |builder|
           builder.input(:title, :as => :range)
         end)
-        output_buffer.should have_tag('input[@min="2"]')
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should have_tag('input[@min="2"]')
       end
     end
   end
@@ -221,7 +235,8 @@ describe 'range input' do
       concat(semantic_form_for(@new_post) do |builder|
         builder.input(:title, :as => :range)
       end)
-      output_buffer.should have_tag('input[@min="1"]')
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag('input[@min="1"]')
     end
 
   end
@@ -237,28 +252,32 @@ describe 'range input' do
      concat(semantic_form_for(@new_post) do |builder|
        builder.input(:title, :as => :range, :input_html => { :max => 102 })
      end)
-     output_buffer.should have_tag('input[@max="102"]')
+     output_doc = output_buffer_to_nokogiri(output_buffer)
+     output_doc.should have_tag('input[@max="102"]')
    end
 
    it "should allow option to override :max" do
      concat(semantic_form_for(@new_post) do |builder|
        builder.input(:title, :as => :range, :max => 102)
      end)
-     output_buffer.should have_tag('input[@max="102"]')
+     output_doc = output_buffer_to_nokogiri(output_buffer)
+     output_doc.should have_tag('input[@max="102"]')
    end
 
    it "should allow :input_html to override :max with :in" do
       concat(semantic_form_for(@new_post) do |builder|
         builder.input(:title, :as => :range, :input_html => { :in => 1..102 })
       end)
-      output_buffer.should have_tag('input[@max="102"]')
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag('input[@max="102"]')
     end
 
     it "should allow option to override :max with :in" do
       concat(semantic_form_for(@new_post) do |builder|
         builder.input(:title, :as => :range, :in => 1..102)
       end)
-      output_buffer.should have_tag('input[@max="102"]')
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag('input[@max="102"]')
     end
 
    describe "and the column is an integer" do
@@ -270,7 +289,8 @@ describe 'range input' do
        concat(semantic_form_for(@new_post) do |builder|
          builder.input(:title, :as => :range)
        end)
-       output_buffer.should have_tag('input[@max="19"]')
+       output_doc = output_buffer_to_nokogiri(output_buffer)
+       output_doc.should have_tag('input[@max="19"]')
      end
    end
 
@@ -315,28 +335,32 @@ describe 'range input' do
       concat(semantic_form_for(@new_post) do |builder|
         builder.input(:title, :as => :range, :input_html => { :max => 102 })
       end)
-      output_buffer.should have_tag('input[@max="102"]')
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag('input[@max="102"]')
     end
 
     it "should allow options to override :max" do
       concat(semantic_form_for(@new_post) do |builder|
         builder.input(:title, :as => :range, :max => 102)
       end)
-      output_buffer.should have_tag('input[@max="102"]')
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag('input[@max="102"]')
     end
 
     it "should allow :input_html to override :max with :in" do
       concat(semantic_form_for(@new_post) do |builder|
         builder.input(:title, :as => :range, :input_html => { :in => 1..102 })
       end)
-      output_buffer.should have_tag('input[@max="102"]')
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag('input[@max="102"]')
     end
 
     it "should allow options to override :max with :in" do
       concat(semantic_form_for(@new_post) do |builder|
         builder.input(:title, :as => :range, :in => 1..102)
       end)
-      output_buffer.should have_tag('input[@max="102"]')
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag('input[@max="102"]')
     end
 
     [:integer, :decimal, :float].each do |column_type|
@@ -349,7 +373,8 @@ describe 'range input' do
           concat(semantic_form_for(@new_post) do |builder|
             builder.input(:title, :as => :range)
           end)
-          output_buffer.should have_tag('input[@max="20"]')
+          output_doc = output_buffer_to_nokogiri(output_buffer)
+          output_doc.should have_tag('input[@max="20"]')
         end
       end
     end
@@ -363,7 +388,8 @@ describe 'range input' do
         concat(semantic_form_for(@new_post) do |builder|
           builder.input(:title, :as => :range)
         end)
-        output_buffer.should have_tag('input[@max="20"]')
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should have_tag('input[@max="20"]')
       end
     end
   end
@@ -374,7 +400,8 @@ describe 'range input' do
       concat(semantic_form_for(@new_post) do |builder|
         builder.input(:title, :as => :range)
       end)
-      output_buffer.should have_tag('input[@max="100"]')
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag('input[@max="100"]')
     end
 
   end
@@ -390,7 +417,8 @@ describe 'range input' do
       concat(semantic_form_for(@new_post) do |builder|
         builder.input(:title, :as => :range)
       end)
-      output_buffer.should have_tag('input[@min="2"]')
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag('input[@min="2"]')
     end
   end
 
@@ -405,7 +433,8 @@ describe 'range input' do
       concat(semantic_form_for(@new_post) do |builder|
         builder.input(:title, :as => :range)
       end)
-      output_buffer.should have_tag('input[@max="2"]')
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag('input[@max="2"]')
     end
   end
 
@@ -421,21 +450,24 @@ describe 'range input' do
       concat(semantic_form_for(@new_post) do |builder|
         builder.input(:title, :as => :range)
       end)
-      output_buffer.should have_tag('input[@step="1"]')
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag('input[@step="1"]')
     end
 
     it "should let input_html override :step" do
       concat(semantic_form_for(@new_post) do |builder|
         builder.input(:title, :as => :range, :input_html => { :step => 3 })
       end)
-      output_buffer.should have_tag('input[@step="3"]')
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag('input[@step="3"]')
     end
 
     it "should let options override :step" do
       concat(semantic_form_for(@new_post) do |builder|
         builder.input(:title, :as => :range, :step => 3)
       end)
-      output_buffer.should have_tag('input[@step="3"]')
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag('input[@step="3"]')
     end
 
   end
@@ -452,21 +484,24 @@ describe 'range input' do
       concat(semantic_form_for(@new_post) do |builder|
         builder.input(:title, :as => :range)
       end)
-      output_buffer.should have_tag('input[@step="2"]')
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag('input[@step="2"]')
     end
 
     it "should let input_html override :step" do
       concat(semantic_form_for(@new_post) do |builder|
         builder.input(:title, :as => :range, :input_html => { :step => 3 })
       end)
-      output_buffer.should have_tag('input[@step="3"]')
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag('input[@step="3"]')
     end
 
     it "should let options override :step" do
       concat(semantic_form_for(@new_post) do |builder|
         builder.input(:title, :as => :range, :step => 3)
       end)
-      output_buffer.should have_tag('input[@step="3"]')
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag('input[@step="3"]')
     end
 
   end
@@ -483,21 +518,24 @@ describe 'range input' do
       concat(semantic_form_for(@new_post) do |builder|
         builder.input(:title, :as => :range)
       end)
-      output_buffer.should have_tag('input[@step="1"]')
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag('input[@step="1"]')
     end
 
     it "should let input_html set :step" do
       concat(semantic_form_for(@new_post) do |builder|
         builder.input(:title, :as => :range, :input_html => { :step => 3 })
       end)
-      output_buffer.should have_tag('input[@step="3"]')
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag('input[@step="3"]')
     end
 
     it "should let options set :step" do
       concat(semantic_form_for(@new_post) do |builder|
         builder.input(:title, :as => :range, :step => 3)
       end)
-      output_buffer.should have_tag('input[@step="3"]')
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag('input[@step="3"]')
     end
 
   end

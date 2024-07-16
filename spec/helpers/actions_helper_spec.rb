@@ -1,12 +1,12 @@
 # encoding: utf-8
 require 'spec_helper'
 
-describe 'FormtasticBootstrap::FormBuilder#actions' do
+RSpec.describe 'FormtasticBootstrap::FormBuilder#actions' do
 
   include FormtasticSpecHelper
 
   before do
-    @output_buffer = ''
+@output_buffer = ActionView::OutputBuffer.new
     mock_everything
   end
 
@@ -18,22 +18,23 @@ describe 'FormtasticBootstrap::FormBuilder#actions' do
             concat('hello')
           end)
         end)
+        @output_doc = output_buffer_to_nokogiri(output_buffer)
       end
 
       it 'should render a fieldset inside the form, with a class of "actions"' do
-        output_buffer.should have_tag("form fieldset.form-actions")
+        @output_doc.should have_tag("form fieldset.form-actions")
       end
 
       it 'should not render an ol inside the fieldset' do
-        output_buffer.should_not have_tag("form fieldset.form-actions ol")
+        @output_doc.should_not have_tag("form fieldset.form-actions ol")
       end
 
       it 'should render the contents of the block inside the fieldset' do
-        output_buffer.should have_tag("form fieldset.form-actions", /hello/)
+        @output_doc.should have_tag("form fieldset.form-actions", /hello/)
       end
 
       it 'should not render a legend inside the fieldset' do
-        output_buffer.should_not have_tag("form fieldset.form-actions legend")
+        @output_doc.should_not have_tag("form fieldset.form-actions legend")
       end
     end
 
@@ -45,9 +46,11 @@ describe 'FormtasticBootstrap::FormBuilder#actions' do
           builder.actions :name => @legend_text do
           end
         end)
+
+        @output_doc = output_buffer_to_nokogiri(output_buffer)
       end
       it 'should render a fieldset inside the form' do
-        output_buffer.should have_tag("form fieldset.form-actions legend", /#{@legend_text}/)
+        @output_doc.should have_tag("form fieldset.form-actions legend", /#{@legend_text}/)
       end
     end
 
@@ -60,10 +63,11 @@ describe 'FormtasticBootstrap::FormBuilder#actions' do
           builder.actions :id => @id_option, :class => @class_option do
           end
         end)
+        @output_doc = output_buffer_to_nokogiri(output_buffer)
       end
       it 'should pass the options into the fieldset tag as attributes' do
-        output_buffer.should have_tag("form fieldset##{@id_option}")
-        output_buffer.should have_tag("form fieldset.#{@class_option}")
+        @output_doc.should have_tag("form fieldset##{@id_option}")
+        @output_doc.should have_tag("form fieldset.#{@class_option}")
       end
     end
 
@@ -77,26 +81,27 @@ describe 'FormtasticBootstrap::FormBuilder#actions' do
         concat(semantic_form_for(@new_post) do |builder|
           concat(builder.actions)
         end)
+        @output_doc = output_buffer_to_nokogiri(output_buffer)
       end
 
       it 'should render a form' do
-        output_buffer.should have_tag('form')
+        @output_doc.should have_tag('form')
       end
 
       it 'should render an actions fieldset inside the form' do
-        output_buffer.should have_tag('form fieldset.form-actions')
+        @output_doc.should have_tag('form fieldset.form-actions')
       end
 
       it 'should not render a legend in the fieldset' do
-        output_buffer.should_not have_tag('form fieldset.form-actions legend')
+        @output_doc.should_not have_tag('form fieldset.form-actions legend')
       end
 
       it 'should not render an ol in the fieldset' do
-        output_buffer.should_not have_tag('form fieldset.form-actions ol')
+        @output_doc.should_not have_tag('form fieldset.form-actions ol')
       end
 
       it 'should render a button in the fieldset for each default action' do
-        output_buffer.should have_tag('form fieldset.form-actions input.btn', :count => 1)
+        @output_doc.should have_tag('form fieldset.form-actions input.btn', :count => 1)
       end
 
     end
@@ -107,14 +112,15 @@ describe 'FormtasticBootstrap::FormBuilder#actions' do
         concat(semantic_form_for(@new_post) do |builder|
           concat(builder.actions(:submit, :cancel, :reset))
         end)
+        @output_doc = output_buffer_to_nokogiri(output_buffer)
       end
 
       it 'should not render a form with a fieldset containing a list item for each button arg' do
-        output_buffer.should_not have_tag('form > fieldset.form-actions > ol > li.action', :count => 3)
+        @output_doc.should_not have_tag('form > fieldset.form-actions > ol > li.action', :count => 3)
       end
 
       it 'should render a form with a fieldset containing each button arg' do
-        output_buffer.should_not have_tag('form > fieldset.form-actions > input.btn', :count => 3)
+        @output_doc.should_not have_tag('form > fieldset.form-actions > input.btn', :count => 3)
       end
 
     end
@@ -125,18 +131,19 @@ describe 'FormtasticBootstrap::FormBuilder#actions' do
        concat(semantic_form_for(@new_post) do |builder|
          concat(builder.actions(:submit, :cancel, :reset, :name => "Now click a button", :id => "my-id"))
        end)
+       @output_doc = output_buffer_to_nokogiri(output_buffer)
      end
 
      it 'should render a form with a fieldset containing each button arg' do
-       output_buffer.should have_tag('form > fieldset.form-actions > .btn', :count => 3)
+       @output_doc.should have_tag('form > fieldset.form-actions > .btn', :count => 3)
      end
 
      it 'should pass the options down to the fieldset' do
-       output_buffer.should have_tag('form > fieldset#my-id.form-actions')
+       @output_doc.should have_tag('form > fieldset#my-id.form-actions')
      end
 
      it 'should use the special :name option as a text for the legend tag' do
-       output_buffer.should have_tag('form > fieldset#my-id.form-actions > legend', /Now click a button/)
+       @output_doc.should have_tag('form > fieldset#my-id.form-actions > legend', /Now click a button/)
      end
 
     end

@@ -1,11 +1,11 @@
 require 'spec_helper'
 
-describe 'FormtasticBootstrap::FormBuilder#fields_for' do
+RSpec.describe 'FormtasticBootstrap::FormBuilder#fields_for' do
 
   include FormtasticSpecHelper
 
   before do
-    @output_buffer = ''
+@output_buffer = ActionView::OutputBuffer.new
     mock_everything
     @new_post.stub(:author).and_return(::Author.new)
   end
@@ -82,9 +82,10 @@ describe 'FormtasticBootstrap::FormBuilder#fields_for' do
           concat(nested_builder.inputs(:login))
         end)
       end)
-      output_buffer.should have_tag('form fieldset.inputs #post_author_1_login_input')
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag('form fieldset.inputs #post_author_1_login_input')
       # Not valid selector, so using good ol' regex
-      output_buffer.should_not =~ /id="post\[author\]_1_login_input"/
+      expect(output_doc.to_html).not_to match(/id="post\[author\]_1_login_input"/)
       # <=> output_buffer.should_not have_tag('form fieldset.inputs #post[author]_1_login_input')
     end
 
@@ -95,15 +96,14 @@ describe 'FormtasticBootstrap::FormBuilder#fields_for' do
           concat(nested_builder.inputs(:login))
         end)
       end)
-      output_buffer.should have_tag('form fieldset.inputs #context2_post_author_1_login_input')
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag('form fieldset.inputs #context2_post_author_1_login_input')
     end
   end
 
   context "when I rendered my own hidden id input" do
 
     before do
-      output_buffer.replace ''
-
       @fred.posts.size.should == 1
       @fred.posts.first.stub(:persisted?).and_return(true)
       @fred.stub(:posts_attributes=)
@@ -117,11 +117,13 @@ describe 'FormtasticBootstrap::FormBuilder#fields_for' do
     end
 
     it "should only render one hidden input (my one)" do
-      output_buffer.should have_tag 'input#author_posts_attributes_0_id', :count => 1
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag 'input#author_posts_attributes_0_id', :count => 1
     end
 
     it "should render the hidden input inside an div.hidden" do
-      output_buffer.should have_tag 'div.hidden.input input#author_posts_attributes_0_id'
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag 'div.hidden.input input#author_posts_attributes_0_id'
     end
   end
 

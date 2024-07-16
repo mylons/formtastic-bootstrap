@@ -1,12 +1,12 @@
 # encoding: utf-8
 require 'spec_helper'
 
-describe 'FormtasticBootstrap::FormBuilder#inputs' do
+RSpec.describe 'FormtasticBootstrap::FormBuilder#inputs' do
 
   include FormtasticSpecHelper
 
   before do
-    @output_buffer = ''
+    @output_buffer = ActionView::OutputBuffer.new
     mock_everything
   end
 
@@ -14,33 +14,35 @@ describe 'FormtasticBootstrap::FormBuilder#inputs' do
 
     describe 'when no options are provided' do
       before do
-        output_buffer.replace 'before_builder' # clear the output buffer and sets before_builder
+        #output_buffer.replace 'before_builder' # clear the output buffer and sets before_builder
+        @output_buffer = ActionView::OutputBuffer.new 'before_builder'
         concat(semantic_form_for(@new_post) do |builder|
           @inputs_output = builder.inputs do
             concat('hello')
           end
         end)
+        @output_doc = output_buffer_to_nokogiri(output_buffer)
       end
 
       it 'should output just the content wrapped in inputs, not the whole template' do
-        output_buffer.should      =~ /before_builder/
-        @inputs_output.should_not =~ /before_builder/
+        expect(@output_doc.to_html).to match(/before_builder/)
+        expect(@inputs_output).not_to match(/before_builder/)
       end
 
       it 'should render a fieldset inside the form, with a class of "inputs"' do
-        output_buffer.should have_tag("form fieldset.inputs")
+        @output_doc.should have_tag("form fieldset.inputs")
       end
 
       it 'should not render an ol inside the fieldset' do
-        output_buffer.should_not have_tag("form fieldset.inputs ol")
+        @output_doc.should_not have_tag("form fieldset.inputs ol")
       end
 
       it 'should not render the contents of the block inside the ol' do
-        output_buffer.should_not have_tag("form fieldset.inputs ol", /hello/)
+        @output_doc.should_not have_tag("form fieldset.inputs ol", /hello/)
       end
 
       it 'should not render a legend inside the fieldset' do
-        output_buffer.should_not have_tag("form fieldset.inputs legend")
+        @output_doc.should_not have_tag("form fieldset.inputs legend")
       end
 
       it 'should render a fieldset even if no object is given' do
@@ -49,7 +51,8 @@ describe 'FormtasticBootstrap::FormBuilder#inputs' do
             concat('bye')
           end
         end)
-        output_buffer.should have_tag("form fieldset.inputs", /bye/)
+        @output_doc = output_buffer_to_nokogiri(output_buffer)
+        @output_doc.should have_tag("form fieldset.inputs", /bye/)
       end
     end
 
@@ -69,8 +72,9 @@ describe 'FormtasticBootstrap::FormBuilder#inputs' do
           end
           concat(inputs)
         end)
-        output_buffer.should have_tag("form fieldset.inputs #post_author_attributes_login")
-        output_buffer.should_not have_tag("form fieldset.inputs #author_login")
+        @output_doc = output_buffer_to_nokogiri(output_buffer)
+        @output_doc.should have_tag("form fieldset.inputs #post_author_attributes_login")
+        @output_doc.should_not have_tag("form fieldset.inputs #author_login")
       end
 
       it 'should concat rendered nested inputs to the template' do
@@ -82,9 +86,9 @@ describe 'FormtasticBootstrap::FormBuilder#inputs' do
           end
         end)
 
-        output_buffer.should have_tag("form fieldset.inputs #post_author_attributes_login")
-        output_buffer.should_not have_tag("form fieldset.inputs #author_login")
-
+        @output_doc = output_buffer_to_nokogiri(output_buffer)
+        @output_doc.should have_tag("form fieldset.inputs #post_author_attributes_login")
+        @output_doc.should_not have_tag("form fieldset.inputs #author_login")
       end
 
       describe "as a symbol representing the association name" do
@@ -96,7 +100,8 @@ describe 'FormtasticBootstrap::FormBuilder#inputs' do
             end
             concat(inputs)
           end)
-          output_buffer.should have_tag("form input[@name='post[author_attributes][login]']")
+          @output_doc = output_buffer_to_nokogiri(output_buffer)
+          @output_doc.should have_tag("form input[@name='post[author_attributes][login]']")
         end
 
       end
@@ -113,14 +118,14 @@ describe 'FormtasticBootstrap::FormBuilder#inputs' do
               concat(author.input(:login))
             end
           end)
-
-          output_buffer.should have_tag("form fieldset.inputs", :count => 2)
-          output_buffer.should have_tag("form fieldset.inputs legend", :count => 2)
-          output_buffer.should have_tag("form fieldset.inputs legend", "1", :count => 1)
-          output_buffer.should have_tag("form fieldset.inputs legend", "2")
-          output_buffer.should have_tag("form input[@name='post[authors_attributes][0][login]']")
-          output_buffer.should have_tag("form input[@name='post[authors_attributes][1][login]']")
-          output_buffer.should_not have_tag('form fieldset[@name]')
+          output_doc = output_buffer_to_nokogiri(output_buffer)
+          output_doc.should have_tag("form fieldset.inputs", count: 2)
+          output_doc.should have_tag("form fieldset.inputs legend", count: 2)
+          output_doc.should have_tag("form fieldset.inputs legend", text: "1", count: 1)
+          output_doc.should have_tag("form fieldset.inputs legend", text: "2")
+          output_doc.should have_tag("form input[@name='post[authors_attributes][0][login]']")
+          output_doc.should have_tag("form input[@name='post[authors_attributes][1][login]']")
+          output_doc.should_not have_tag('form fieldset[@name]')
         end
 
         it 'should include an indexed :label input for each item' do
@@ -129,10 +134,10 @@ describe 'FormtasticBootstrap::FormBuilder#inputs' do
               concat(author.input(:login, :label => "#{index}", :required => false))
             end
           end)
-
-          output_buffer.should have_tag("form fieldset.inputs label", "1", :count => 1)
-          output_buffer.should have_tag("form fieldset.inputs label", "2", :count => 1)
-          output_buffer.should_not have_tag('form fieldset legend')
+          @output_doc = output_buffer_to_nokogiri(output_buffer)
+          @output_doc.should have_tag("form fieldset.inputs label", text: "1", count: 1)
+          @output_doc.should have_tag("form fieldset.inputs label", text: "2", count: 1)
+          @output_doc.should_not have_tag('form fieldset legend')
         end
       end
 
@@ -145,7 +150,8 @@ describe 'FormtasticBootstrap::FormBuilder#inputs' do
             end
             concat(inputs)
           end)
-          output_buffer.should have_tag("form input[@name='post[author_attributes][login]']")
+          @output_doc = output_buffer_to_nokogiri(output_buffer)
+          @output_doc.should have_tag("form input[@name='post[author_attributes][login]']")
         end
 
       end
@@ -159,7 +165,8 @@ describe 'FormtasticBootstrap::FormBuilder#inputs' do
             end
             concat(inputs)
           end)
-          output_buffer.should have_tag("form input[@name='post[author][login]']")
+          @output_doc = output_buffer_to_nokogiri(output_buffer)
+          @output_doc.should have_tag("form input[@name='post[author][login]']")
         end
 
       end
@@ -184,8 +191,8 @@ describe 'FormtasticBootstrap::FormBuilder#inputs' do
           end
           concat(inputs)
         end)
-
-        output_buffer.should have_tag('form fieldset #post_author_attributes_10_login')
+        @output_doc = output_buffer_to_nokogiri(output_buffer)
+        @output_doc.should have_tag('form fieldset #post_author_attributes_10_login')
       end
 
       it 'should not add builder as a fieldset attribute tag' do
@@ -196,7 +203,8 @@ describe 'FormtasticBootstrap::FormBuilder#inputs' do
           concat(inputs)
         end)
 
-        output_buffer.should_not have_tag('fieldset[@builder="Formtastic::Helpers::FormHelper"]')
+        @output_doc = output_buffer_to_nokogiri(output_buffer)
+        @output_doc.should_not have_tag('fieldset[@builder="Formtastic::Helpers::FormHelper"]')
       end
 
       it 'should send parent_builder as an option to allow child index interpolation for legends' do
@@ -207,8 +215,8 @@ describe 'FormtasticBootstrap::FormBuilder#inputs' do
           end
           concat(inputs)
         end)
-
-        output_buffer.should have_tag('fieldset legend', 'Author #1')
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should have_tag('fieldset legend', 'Author #1')
       end
 
       it 'should also provide child index interpolation for legends when nested child index is a hash' do
@@ -219,8 +227,8 @@ describe 'FormtasticBootstrap::FormBuilder#inputs' do
           end
           concat(inputs)
         end)
-
-        output_buffer.should have_tag('fieldset legend', 'Author #11')
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should have_tag('fieldset legend', 'Author #11')
       end
 
       it 'should send parent_builder as an option to allow child index interpolation for labels' do
@@ -232,7 +240,8 @@ describe 'FormtasticBootstrap::FormBuilder#inputs' do
           concat(inputs)
         end)
 
-        output_buffer.should have_tag('fieldset label', 'Author #1')
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should have_tag('fieldset label', 'Author #1')
       end
 
       it 'should also provide child index interpolation for labels when nested child index is a hash' do
@@ -244,7 +253,8 @@ describe 'FormtasticBootstrap::FormBuilder#inputs' do
           concat(inputs)
         end)
 
-        output_buffer.should have_tag('fieldset label', 'Author #11')
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should have_tag('fieldset label', 'Author #11')
       end
     end
 
@@ -272,10 +282,11 @@ describe 'FormtasticBootstrap::FormBuilder#inputs' do
         end
 
         it 'should render a fieldset with a legend inside the form' do
-          output_buffer.should have_tag("form fieldset legend", /^#{@legend_text}$/)
-          output_buffer.should have_tag("form fieldset legend", /^#{@legend_text_using_name}$/)
-          output_buffer.should have_tag("form fieldset legend", /^#{@legend_text_using_title}$/)
-          output_buffer.should have_tag("form fieldset legend", /^#{@nested_forms_legend_text}$/)
+          output_doc = output_buffer_to_nokogiri(output_buffer)
+          output_doc.should have_tag("form fieldset legend", /^#{@legend_text}$/)
+          output_doc.should have_tag("form fieldset legend", /^#{@legend_text_using_name}$/)
+          output_doc.should have_tag("form fieldset legend", /^#{@legend_text_using_title}$/)
+          output_doc.should have_tag("form fieldset legend", /^#{@nested_forms_legend_text}$/)
         end
       end
 
@@ -312,10 +323,11 @@ describe 'FormtasticBootstrap::FormBuilder#inputs' do
         end
 
         it 'should render a fieldset with a localized legend inside the form' do
-          output_buffer.should have_tag("form fieldset legend", /^#{@localized_legend_text}$/)
-          output_buffer.should have_tag("form fieldset legend", /^#{@localized_legend_text_using_name}$/)
-          output_buffer.should have_tag("form fieldset legend", /^#{@localized_legend_text_using_title}$/)
-          output_buffer.should have_tag("form fieldset legend", /^#{@localized_nested_forms_legend_text}$/)
+          output_doc = output_buffer_to_nokogiri(output_buffer)
+          output_doc.should have_tag("form fieldset legend", /^#{@localized_legend_text}$/)
+          output_doc.should have_tag("form fieldset legend", /^#{@localized_legend_text_using_name}$/)
+          output_doc.should have_tag("form fieldset legend", /^#{@localized_legend_text_using_title}$/)
+          output_doc.should have_tag("form fieldset legend", /^#{@localized_nested_forms_legend_text}$/)
         end
       end
     end
@@ -332,8 +344,9 @@ describe 'FormtasticBootstrap::FormBuilder#inputs' do
       end
 
       it 'should pass the options into the fieldset tag as attributes' do
-        output_buffer.should have_tag("form fieldset##{@id_option}")
-        output_buffer.should have_tag("form fieldset.#{@class_option}")
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should have_tag("form fieldset##{@id_option}")
+        output_doc.should have_tag("form fieldset.#{@class_option}")
       end
     end
 
@@ -364,41 +377,50 @@ describe 'FormtasticBootstrap::FormBuilder#inputs' do
       end
 
       it 'should render a form' do
-        output_buffer.should have_tag('form')
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should have_tag('form')
       end
 
       it 'should render a fieldset inside the form' do
-        output_buffer.should have_tag('form > fieldset.inputs')
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should have_tag('form > fieldset.inputs')
       end
 
       it 'should not render a legend in the fieldset' do
-        output_buffer.should_not have_tag('form > fieldset.inputs > legend')
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should_not have_tag('form > fieldset.inputs > legend')
       end
 
       it 'should not render an ol in the fieldset' do
-        output_buffer.should_not have_tag('form > fieldset.inputs > ol')
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should_not have_tag('form > fieldset.inputs > ol')
       end
 
       it 'should not render a list item in the ol for each column and reflection' do
         # Remove the :has_many macro and :created_at column
         count = ::Post.content_columns.size + ::Post.reflections.size - 2
-        output_buffer.should_not have_tag('form > fieldset.inputs > ol > li', :count => count)
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should_not have_tag('form > fieldset.inputs > ol > li', :count => count)
       end
 
       it 'should not render a string list item for title' do
-        output_buffer.should_not have_tag('form > fieldset.inputs > ol > li.string')
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should_not have_tag('form > fieldset.inputs > ol > li.string')
       end
 
       it 'should not render a text list item for body' do
-        output_buffer.should_not have_tag('form > fieldset.inputs > ol > li.text')
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should_not have_tag('form > fieldset.inputs > ol > li.text')
       end
 
       it 'should not render a select list item for author_id' do
-        output_buffer.should_not have_tag('form > fieldset.inputs > ol > li.select', :count => 1)
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should_not have_tag('form > fieldset.inputs > ol > li.select', :count => 1)
       end
 
       it 'should not render timestamps inputs by default' do
-        output_buffer.should_not have_tag('form > fieldset.inputs > ol > li.datetime')
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should_not have_tag('form > fieldset.inputs > ol > li.datetime')
       end
 
       context "with a polymorphic association" do
@@ -417,7 +439,8 @@ describe 'FormtasticBootstrap::FormBuilder#inputs' do
           concat(semantic_form_for(@new_post) do |builder|
             concat(builder.inputs)
           end)
-          output_buffer.should_not have_tag('li#post_commentable_input')
+          output_doc = output_buffer_to_nokogiri(output_buffer)
+          output_doc.should_not have_tag('li#post_commentable_input')
         end
 
       end
@@ -430,12 +453,13 @@ describe 'FormtasticBootstrap::FormBuilder#inputs' do
             concat(builder.inputs(:title, :body))
           end)
 
-          output_buffer.should have_tag('form > fieldset.inputs input', :count => 1)
-          output_buffer.should have_tag('form > fieldset.inputs textarea', :count => 1)
+          output_doc = output_buffer_to_nokogiri(output_buffer)
+          output_doc.should have_tag('form > fieldset.inputs input', :count => 1)
+          output_doc.should have_tag('form > fieldset.inputs textarea', :count => 1)
 
-          output_buffer.should_not have_tag('form > fieldset.inputs > ol > li', :count => 2)
-          output_buffer.should_not have_tag('form > fieldset.inputs > ol > li.string')
-          output_buffer.should_not have_tag('form > fieldset.inputs > ol > li.text')
+          output_doc.should_not have_tag('form > fieldset.inputs > ol > li', :count => 2)
+          output_doc.should_not have_tag('form > fieldset.inputs > ol > li.string')
+          output_doc.should_not have_tag('form > fieldset.inputs > ol > li.text')
         end
       end
 
@@ -445,9 +469,10 @@ describe 'FormtasticBootstrap::FormBuilder#inputs' do
             concat(builder.inputs(:title, :body))
           end)
 
-          output_buffer.should have_tag('form > fieldset.inputs input', :count => 2)
+          output_doc = output_buffer_to_nokogiri(output_buffer)
+          output_doc.should have_tag('form > fieldset.inputs input', :count => 2)
 
-          output_buffer.should_not have_tag('form > fieldset.inputs > ol > li.string')
+          output_doc.should_not have_tag('form > fieldset.inputs > ol > li.string')
         end
       end
 
@@ -484,8 +509,9 @@ describe 'FormtasticBootstrap::FormBuilder#inputs' do
             concat(builder.inputs(:login, :for => @bob))
           end)
 
-          output_buffer.should have_tag("form fieldset.inputs #post_author_login")
-          output_buffer.should_not have_tag("form fieldset.inputs #author_login")
+          output_doc = output_buffer_to_nokogiri(output_buffer)
+          output_doc.should have_tag("form fieldset.inputs #post_author_login")
+          output_doc.should_not have_tag("form fieldset.inputs #author_login")
         end
       end
 
@@ -494,8 +520,9 @@ describe 'FormtasticBootstrap::FormBuilder#inputs' do
           concat(semantic_form_for(:project, :url => 'http://test.host/') do |builder|
             concat(builder.inputs(:login, :for => @bob))
           end)
-          output_buffer.should have_tag("form fieldset.inputs #project_author_login")
-          output_buffer.should_not have_tag("form fieldset.inputs #project_login")
+          output_doc = output_buffer_to_nokogiri(output_buffer)
+          output_doc.should have_tag("form fieldset.inputs #project_author_login")
+          output_doc.should_not have_tag("form fieldset.inputs #project_login")
         end
       end
     end
@@ -511,17 +538,20 @@ describe 'FormtasticBootstrap::FormBuilder#inputs' do
       end
 
       it 'should not render a form with a fieldset containing two list items' do
-        output_buffer.should_not have_tag('form > fieldset.inputs > ol > li', :count => 4)
-        output_buffer.should_not have_tag('form > fieldset.inputs input', :count => 4)
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should_not have_tag('form > fieldset.inputs > ol > li', :count => 4)
+        output_doc.should_not have_tag('form > fieldset.inputs input', :count => 4)
       end
 
       it 'should pass the options down to the fieldset' do
-        output_buffer.should have_tag('form > fieldset#my-id.inputs')
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should have_tag('form > fieldset#my-id.inputs')
       end
 
       it 'should use the special :name option as a text for the legend tag' do
-        output_buffer.should have_tag('form > fieldset#my-id.inputs > legend', /^#{@legend_text_using_option}$/)
-        output_buffer.should have_tag('form > fieldset#my-id-2.inputs > legend', /^#{@legend_text_using_arg}$/)
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should have_tag('form > fieldset#my-id.inputs > legend', /^#{@legend_text_using_option}$/)
+        output_doc.should have_tag('form > fieldset#my-id-2.inputs > legend', /^#{@legend_text_using_arg}$/)
       end
     end
 
@@ -535,7 +565,8 @@ describe 'FormtasticBootstrap::FormBuilder#inputs' do
           concat(builder.inputs do
           end)
         end)
-        output_buffer.should_not have_tag('form > li')
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should_not have_tag('form > li')
       end
     end
 
@@ -547,8 +578,9 @@ describe 'FormtasticBootstrap::FormBuilder#inputs' do
             end)
           end)
         end)
-        output_buffer.should_not have_tag('form > fieldset.inputs > ol > li > fieldset.inputs > ol')
-        output_buffer.should have_tag('form > fieldset.inputs > fieldset.inputs')
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should_not have_tag('form > fieldset.inputs > ol > li > fieldset.inputs > ol')
+        output_doc.should have_tag('form > fieldset.inputs > fieldset.inputs')
       end
     end
 
@@ -560,8 +592,9 @@ describe 'FormtasticBootstrap::FormBuilder#inputs' do
             end)
           end)
         end)
-        output_buffer.should_not have_tag('form > fieldset.inputs > ol > li > fieldset.inputs > ol')
-        output_buffer.should have_tag('form > fieldset.inputs > fieldset.inputs')
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should_not have_tag('form > fieldset.inputs > ol > li > fieldset.inputs > ol')
+        output_doc.should have_tag('form > fieldset.inputs > fieldset.inputs')
       end
     end
 
@@ -572,8 +605,9 @@ describe 'FormtasticBootstrap::FormBuilder#inputs' do
             concat(builder.inputs(:title))
           end)
         end)
-        output_buffer.should_not have_tag('form > fieldset.inputs > ol > li > fieldset.inputs > ol')
-        output_buffer.should have_tag('form > fieldset.inputs > fieldset.inputs')
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should_not have_tag('form > fieldset.inputs > ol > li > fieldset.inputs > ol')
+        output_doc.should have_tag('form > fieldset.inputs > fieldset.inputs')
       end
     end
 
@@ -584,8 +618,9 @@ describe 'FormtasticBootstrap::FormBuilder#inputs' do
             concat(builder.inputs(:name, :for => :author))
           end)
         end)
-        output_buffer.should_not have_tag('form > fieldset.inputs > ol > li > fieldset.inputs > ol')
-        output_buffer.should have_tag('form > fieldset.inputs > fieldset.inputs')
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should_not have_tag('form > fieldset.inputs > ol > li > fieldset.inputs > ol')
+        output_doc.should have_tag('form > fieldset.inputs > fieldset.inputs')
       end
     end
 
@@ -599,8 +634,9 @@ describe 'FormtasticBootstrap::FormBuilder#inputs' do
             end)
           end)
         end)
-        output_buffer.should_not have_tag('form > fieldset.inputs > ol > li > fieldset.inputs > ol > li > fieldset.inputs > ol')
-        output_buffer.should have_tag('form > fieldset.inputs > fieldset.inputs > fieldset.inputs')
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should_not have_tag('form > fieldset.inputs > ol > li > fieldset.inputs > ol > li > fieldset.inputs > ol')
+        output_doc.should have_tag('form > fieldset.inputs > fieldset.inputs > fieldset.inputs')
       end
     end
 
@@ -614,8 +650,9 @@ describe 'FormtasticBootstrap::FormBuilder#inputs' do
             end)
           end)
         end)
-        output_buffer.should_not have_tag('form > fieldset.inputs > ol > li > fieldset.inputs > ol')
-        output_buffer.should have_tag('form > fieldset.inputs > fieldset.inputs', :count => 2)
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should_not have_tag('form > fieldset.inputs > ol > li > fieldset.inputs > ol')
+        output_doc.should have_tag('form > fieldset.inputs > fieldset.inputs', :count => 2)
       end
     end
 

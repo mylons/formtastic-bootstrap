@@ -10,104 +10,121 @@ module CustomMacros
 
     def it_should_have_input_wrapper_with_class(class_name)
       it "should have input wrapper with class '#{class_name}'" do
-        output_buffer.should have_tag("form div.#{class_name}")
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should have_tag("form div.#{class_name}")
       end
     end
 
     def it_should_have_input_wrapper_with_id(id_string)
       it "should have input wrapper with id '#{id_string}'" do
-        output_buffer.should have_tag("form div##{id_string}")
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should have_tag("form div##{id_string}")
       end
     end
 
     def it_should_not_have_a_label
       it "should not have a label" do
-        output_buffer.should_not have_tag("form li label")
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should_not have_tag("form li label")
       end
     end
 
     def it_should_have_a_nested_fieldset
       it "should have a nested_fieldset" do
-        output_buffer.should have_tag("form li fieldset")
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should have_tag("form li fieldset")
       end
     end
 
     def it_should_have_a_nested_fieldset_with_class(klass)
       it "should have a nested_fieldset with class #{klass}" do
-        output_buffer.should have_tag("form li fieldset.#{klass}")
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should have_tag("form li fieldset.#{klass}")
       end
     end
 
     def it_should_have_a_nested_ordered_list_with_class(klass)
       it "should have a nested fieldset with class #{klass}" do
-        output_buffer.should have_tag("form li ol.#{klass}")
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should have_tag("form li ol.#{klass}")
       end
     end
 
     def it_should_have_label_with_text(string_or_regex)
       it "should have a label with text '#{string_or_regex}'" do
-        output_buffer.should have_tag("form div.form-group label.control-label", string_or_regex)
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should have_tag("form div.form-group label.control-label", string_or_regex)
       end
     end
 
     def it_should_have_label_for(element_id)
       it "should have a label for ##{element_id}" do
-        output_buffer.should have_tag("form div.form-group label.control-label[@for='#{element_id}']")
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should have_tag("form div.form-group label.control-label[@for='#{element_id}']")
       end
     end
 
     def it_should_have_an_inline_label_for(element_id)
       it "should have a label for ##{element_id}" do
-        output_buffer.should have_tag("form div.form-group span.form-wrapper label[@for='#{element_id}']")
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should have_tag("form div.form-group span.form-wrapper label[@for='#{element_id}']")
       end
     end
 
     def it_should_have_input_with_id(element_id)
       it "should have an input with id '#{element_id}'" do
-        output_buffer.should have_tag("form div.form-group span.form-wrapper input[@id=\"#{element_id}\"]")
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should have_tag("form div.form-group span.form-wrapper input[@id=\"#{element_id}\"]")
       end
     end
 
     def it_should_have_select_with_id(element_id)
       it "should have a select box with id '#{element_id}'" do
-        output_buffer.should have_tag("form div.form-group span.form-wrapper select##{element_id}")
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should have_tag("form div.form-group span.form-wrapper select##{element_id}")
       end
     end
 
     def it_should_have_input_with_type(input_type)
       it "should have a #{input_type} input" do
-        output_buffer.should have_tag("form div.form-group span.form-wrapper input[@type=\"#{input_type}\"]")
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should have_tag("form div.form-group span.form-wrapper input[@type=\"#{input_type}\"]")
       end
     end
 
     def it_should_have_input_with_name(name)
       it "should have an input named #{name}" do
-        output_buffer.should have_tag("form div.form-group span.form-wrapper input[@name=\"#{name}\"]")
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should have_tag("form div.form-group span.form-wrapper input[@name=\"#{name}\"]")
       end
     end
 
     def it_should_have_select_with_name(name)
       it "should have an input named #{name}" do
-        output_buffer.should have_tag("form div.form-group span.form-wrapper select[@name=\"#{name}\"]")
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should have_tag("form div.form-group span.form-wrapper select[@name=\"#{name}\"]")
       end
     end
 
     def it_should_have_textarea_with_name(name)
       it "should have an input named #{name}" do
-        output_buffer.should have_tag("form div.form-group span.form-wrapper textarea[@name=\"#{name}\"]")
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should have_tag("form div.form-group span.form-wrapper textarea[@name=\"#{name}\"]")
       end
     end
 
     def it_should_have_textarea_with_id(element_id)
       it "should have an input with id '#{element_id}'" do
-        output_buffer.should have_tag("form div.form-group span.form-wrapper textarea##{element_id}")
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should have_tag("form div.form-group span.form-wrapper textarea##{element_id}")
       end
     end
 
     def it_should_have_label_and_input_with_id(element_id)
       it "should have an input with id '#{element_id}'" do
-        output_buffer.should have_tag("form div.form-group span.form-wrapper input##{element_id}")
-        output_buffer.should have_tag("form div.form-group label.control-label[@for='#{element_id}']")
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should have_tag("form div.form-group span.form-wrapper input##{element_id}")
+        output_doc.should have_tag("form div.form-group label.control-label[@for='#{element_id}']")
       end
     end
 
@@ -117,7 +134,8 @@ module CustomMacros
           concat(semantic_form_for(@new_post) do |builder|
             concat(builder.input(:title, :as => as))
           end)
-          output_buffer.should have_tag("form div.form-group span.form-wrapper input[@size='#{Formtastic::FormBuilder.default_text_field_size}']")
+          output_doc = output_buffer_to_nokogiri(output_buffer)
+          output_doc.should have_tag("form div.form-group span.form-wrapper input[@size='#{Formtastic::FormBuilder.default_text_field_size}']")
         end
       end
     end
@@ -128,8 +146,9 @@ module CustomMacros
           concat(semantic_form_for(@new_post) do |builder|
             concat(builder.input(:title, :as => as))
           end)
-          output_buffer.should have_tag("form div.form-group span.form-wrapper input")
-          output_buffer.should_not have_tag("form div.form-group span.form-wrapper input[@size]")
+          output_doc = output_buffer_to_nokogiri(output_buffer)
+          output_doc.should have_tag("form div.form-group span.form-wrapper input")
+          output_doc.should_not have_tag("form div.form-group span.form-wrapper input[@size]")
         end
       end
     end
@@ -139,7 +158,8 @@ module CustomMacros
         concat(semantic_form_for(@new_post) do |builder|
           concat(builder.input(:title, :as => as, :input_html => { :class => 'myclass' }))
         end)
-        output_buffer.should have_tag("form div.form-group span.form-wrapper input.myclass")
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should have_tag("form div.form-group span.form-wrapper input.myclass")
       end
     end
 
@@ -148,14 +168,16 @@ module CustomMacros
         concat(semantic_form_for(@new_post) do |builder|
           concat(builder.input(:title, :as => as, :input_html => { :id => 'myid' }))
         end)
-        output_buffer.should have_tag('form div.form-group label.control-label[@for="myid"]')
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should have_tag('form div.form-group label.control-label[@for="myid"]')
       end
     end
 
     def it_should_have_maxlength_matching_column_limit
       it 'should have a maxlength matching column limit' do
         @new_post.column_for_attribute(:title).limit.should == 50
-        output_buffer.should have_tag("form div.form-group span.form-wrapper input[@maxlength='50']")
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should have_tag("form div.form-group span.form-wrapper input[@maxlength='50']")
       end
     end
 
@@ -167,8 +189,9 @@ module CustomMacros
         concat(semantic_form_for(@new_post) do |builder|
           concat(builder.input(:title, :as => as))
         end)
+        output_doc = output_buffer_to_nokogiri(output_buffer)
 
-        output_buffer.should have_tag("form li input[@size='#{column_limit_shorted_than_default}']")
+        output_doc.should have_tag("form li input[@size='#{column_limit_shorted_than_default}']")
       end
     end
 
@@ -178,24 +201,28 @@ module CustomMacros
           @title_errors = ['must not be blank', 'must be longer than 10 characters', 'must be awesome']
           @errors = double('errors')
           @errors.stub(:[]).with(errors_matcher(:title)).and_return(@title_errors)
+
           Formtastic::FormBuilder.file_metadata_suffixes.each do |suffix|
             @errors.stub(:[]).with(errors_matcher("title_#{suffix}".to_sym)).and_return(nil)
           end
-          @new_post.stub(:errors).and_return(@errors)
+          #@new_post.stub(:errors).and_return(@errors)
+          @new_post.stub(:errors).and_return(double('errors', :[] => ['some error'], :full_messages_for => ['Title is too short'], :any? => true))
         end
 
         it 'should apply an errors class to the list item' do
           concat(semantic_form_for(@new_post) do |builder|
             concat(builder.input(:title, :as => type))
           end)
-          output_buffer.should have_tag('form div.error')
+          output_doc = output_buffer_to_nokogiri(output_buffer)
+          output_doc.should have_tag('form div.error')
         end
 
         it 'should not wrap the input with the Rails default error wrapping' do
           concat(semantic_form_for(@new_post) do |builder|
             concat(builder.input(:title, :as => type))
           end)
-          output_buffer.should_not have_tag('div.fieldWithErrors')
+          output_doc = output_buffer_to_nokogiri(output_buffer)
+          output_doc.should_not have_tag('div.fieldWithErrors')
         end
 
         it 'should render a paragraph for the errors' do
@@ -203,10 +230,11 @@ module CustomMacros
           concat(semantic_form_for(@new_post) do |builder|
             concat(builder.input(:title, :as => type))
           end)
+          output_doc = output_buffer_to_nokogiri(output_buffer)
           if inline_or_block == :inline
-            output_buffer.should have_tag('form div.error span.help-inline')
+            output_doc.should have_tag('form div.error span.help-inline')
           else
-            output_buffer.should have_tag('form div.error span.help-block')
+            output_doc.should have_tag('form div.error span.help-block')
           end
         end
 
@@ -215,7 +243,8 @@ module CustomMacros
           concat(semantic_form_for(@new_post) do |builder|
             concat(builder.input(:title, :as => type))
           end)
-          output_buffer.should have_tag('form div.error ul.errors')
+          output_doc = output_buffer_to_nokogiri(output_buffer)
+          output_doc.should have_tag('form div.error ul.errors')
         end
       end
 
@@ -227,15 +256,18 @@ module CustomMacros
         end
 
         it 'should not apply an errors class to the list item' do
-          output_buffer.should_not have_tag('form li.error')
+          output_doc = output_buffer_to_nokogiri(output_buffer)
+          output_doc.should_not have_tag('form li.error')
         end
 
         it 'should not render a paragraph for the errors' do
-          output_buffer.should_not have_tag('form li.error p.inline-errors')
+          output_doc = output_buffer_to_nokogiri(output_buffer)
+          output_doc.should_not have_tag('form li.error p.inline-errors')
         end
 
         it 'should not display an error list' do
-          output_buffer.should_not have_tag('form li.error ul.errors')
+          output_doc = output_buffer_to_nokogiri(output_buffer)
+          output_doc.should_not have_tag('form li.error ul.errors')
         end
       end
 
@@ -247,15 +279,18 @@ module CustomMacros
         end
 
         it 'should not apply an errors class to the list item' do
-          output_buffer.should_not have_tag('form li.error')
+          output_doc = output_buffer_to_nokogiri(output_buffer)
+          output_doc.should_not have_tag('form li.error')
         end
 
         it 'should not render a paragraph for the errors' do
-          output_buffer.should_not have_tag('form li.error p.inline-errors')
+          output_doc = output_buffer_to_nokogiri(output_buffer)
+          output_doc.should_not have_tag('form li.error p.inline-errors')
         end
 
         it 'should not display an error list' do
-          output_buffer.should_not have_tag('form li.error ul.errors')
+          output_doc = output_buffer_to_nokogiri(output_buffer)
+          output_doc.should_not have_tag('form li.error ul.errors')
         end
       end
     end
@@ -277,15 +312,22 @@ module CustomMacros
       describe 'when the :collection option is provided' do
 
         before do
-          @authors = ::Author.all * 2
-          output_buffer.replace ''
+          # Convert the result of Author.all to an array before using the * operator
+          authors_scope = ::Author.all
+          #authors_array = authors_scope.is_a?(Array) ? authors_scope : authors_scope.to_a
+          authors_array = authors_scope.array
+          @authors = authors_array * 2
+
+          # Update output_buffer with Nokogiri
+          @output_buffer = ActionView::OutputBuffer.new
         end
 
         it 'should use the provided collection' do
           concat(semantic_form_for(@new_post) do |builder|
             concat(builder.input(:author, :as => as, :collection => @authors))
           end)
-          output_buffer.should have_tag("form div.#{cd_as} #{countable}", :count => @authors.size + (as == :select ? 1 : 0))
+          output_doc = output_buffer_to_nokogiri(output_buffer)
+          output_doc.should have_tag("form div.#{cd_as} #{countable}", :count => @authors.size + (as == :select ? 1 : 0))
         end
 
         describe 'and the :collection is an array of strings' do
@@ -299,8 +341,9 @@ module CustomMacros
             end)
 
             @categories.each do |value|
-              output_buffer.should have_tag("form div.#{cd_as}", /#{value}/)
-              output_buffer.should have_tag("form div.#{cd_as} #{countable}[@value='#{value}']")
+              output_doc = output_buffer_to_nokogiri(output_buffer)
+              output_doc.should have_tag("form div.#{cd_as}", /#{value}/)
+              output_doc.should have_tag("form div.#{cd_as} #{countable}[@value='#{value}']")
             end
           end
 
@@ -313,10 +356,11 @@ module CustomMacros
                 end
                 concat(fields)
               end)
-              output_buffer.should have_tag("form div.form-group span.form-wrapper label[@for='post_author_category_name_general']")
-              output_buffer.should have_tag("form div.form-group span.form-wrapper label[@for='post_author_category_name_design']")
-              output_buffer.should have_tag("form div.form-group span.form-wrapper label[@for='post_author_category_name_development']")
-              output_buffer.should have_tag("form div.form-group span.form-wrapper label[@for='post_author_category_name_quasi-serious_inventions']")
+              output_doc = output_buffer_to_nokogiri(output_buffer)
+              output_doc.should have_tag("form div.form-group span.form-wrapper label[@for='post_author_category_name_general']")
+              output_doc.should have_tag("form div.form-group span.form-wrapper label[@for='post_author_category_name_design']")
+              output_doc.should have_tag("form div.form-group span.form-wrapper label[@for='post_author_category_name_development']")
+              output_doc.should have_tag("form div.form-group span.form-wrapper label[@for='post_author_category_name_quasi-serious_inventions']")
             end
           end
         end
@@ -332,8 +376,9 @@ module CustomMacros
             end)
 
             @categories.each do |label, value|
-              output_buffer.should have_tag("form div.#{cd_as}", /#{label}/)
-              output_buffer.should have_tag("form div.#{cd_as} #{countable}[@value='#{value}']")
+              output_doc = output_buffer_to_nokogiri(output_buffer)
+              output_doc.should have_tag("form div.#{cd_as}", /#{label}/)
+              output_doc.should have_tag("form div.#{cd_as} #{countable}[@value='#{value}']")
             end
           end
         end
@@ -350,9 +395,10 @@ module CustomMacros
 
             @categories.each do |text, value|
               label = as == :select ? :option : :label
-              output_buffer.should have_tag("form div.#{cd_as} #{label}", /#{text}/i)
-              output_buffer.should have_tag("form div.#{cd_as} #{countable}[@value='#{value.to_s}']")
-              output_buffer.should have_tag("form div.#{cd_as} #{countable}#post_category_name_#{value.to_s}") if as == :radio
+              output_doc = output_buffer_to_nokogiri(output_buffer)
+              output_doc.should have_tag("form div.#{cd_as} #{label}", /#{text}/i)
+              output_doc.should have_tag("form div.#{cd_as} #{countable}[@value='#{value.to_s}']")
+              output_doc.should have_tag("form div.#{cd_as} #{countable}#post_category_name_#{value.to_s}") if as == :radio
             end
           end
         end
@@ -368,8 +414,9 @@ module CustomMacros
                 concat(builder.input(:category_name, :as => as, :collection => @choices))
               end)
 
-              output_buffer.should have_tag("form div.#{cd_as} #{countable}#post_category_name_true")
-              output_buffer.should have_tag("form div.#{cd_as} #{countable}#post_category_name_false")
+              output_doc = output_buffer_to_nokogiri(output_buffer)
+              output_doc.should have_tag("form div.#{cd_as} #{countable}#post_category_name_true")
+              output_doc.should have_tag("form div.#{cd_as} #{countable}#post_category_name_false")
             end
           end
         end
@@ -386,8 +433,9 @@ module CustomMacros
 
             @categories.each do |value|
               label = as == :select ? :option : :label
-              output_buffer.should have_tag("form div.#{cd_as} #{label}", /#{value}/i)
-              output_buffer.should have_tag("form div.#{cd_as} #{countable}[@value='#{value.to_s}']")
+              output_doc = output_buffer_to_nokogiri(output_buffer)
+              output_doc.should have_tag("form div.#{cd_as} #{label}", /#{value}/i)
+              output_doc.should have_tag("form div.#{cd_as} #{countable}[@value='#{value.to_s}']")
             end
           end
         end
@@ -403,8 +451,9 @@ module CustomMacros
             end)
 
             @categories.each do |label, value|
-              output_buffer.should have_tag("form div.#{cd_as}", /#{label}/)
-              output_buffer.should have_tag("form div.#{cd_as} #{countable}[@value='#{value}']")
+              output_doc = output_buffer_to_nokogiri(output_buffer)
+              output_doc.should have_tag("form div.#{cd_as}", /#{label}/)
+              output_doc.should have_tag("form div.#{cd_as} #{countable}[@value='#{value}']")
             end
           end
 
@@ -421,7 +470,8 @@ module CustomMacros
 
             it 'should have options with text content from the specified method' do
               ::Author.all.each do |author|
-                output_buffer.should have_tag("form div.#{cd_as}", /#{author.login}/)
+                output_doc = output_buffer_to_nokogiri(output_buffer)
+                output_doc.should have_tag("form div.#{cd_as}", /#{author.login}/)
               end
             end
           end
@@ -435,7 +485,8 @@ module CustomMacros
 
             it 'should have options with the proc applied to each' do
               ::Author.all.each do |author|
-                output_buffer.should have_tag("form div.#{cd_as}", /#{author.login.reverse}/)
+                output_doc = output_buffer_to_nokogiri(output_buffer)
+                output_doc.should have_tag("form div.#{cd_as}", /#{author.login.reverse}/)
               end
             end
           end
@@ -452,7 +503,8 @@ module CustomMacros
 
             it 'should have options with the proc applied to each' do
               ::Author.all.each do |author|
-                output_buffer.should have_tag("form div.#{cd_as}", /#{author.login.reverse}/)
+                output_doc = output_buffer_to_nokogiri(output_buffer)
+                output_doc.should have_tag("form div.#{cd_as}", /#{author.login.reverse}/)
               end
             end
           end
@@ -473,7 +525,8 @@ module CustomMacros
 
               it "should render the options with #{label_method} as the label" do
                 ::Author.all.each do |author|
-                  output_buffer.should have_tag("form div.#{cd_as}", /The Label Text/)
+                  output_doc = output_buffer_to_nokogiri(output_buffer)
+                  output_doc.should have_tag("form div.#{cd_as}", /The Label Text/)
                 end
               end
             end
@@ -492,7 +545,8 @@ module CustomMacros
 
             it 'should have options with values from specified method' do
               ::Author.all.each do |author|
-                output_buffer.should have_tag("form div.#{cd_as} #{countable}[@value='#{author.login}']")
+                output_doc = output_buffer_to_nokogiri(output_buffer)
+                output_doc.should have_tag("form div.#{cd_as} #{countable}[@value='#{author.login}']")
               end
             end
           end
@@ -506,7 +560,8 @@ module CustomMacros
 
             it 'should have options with the proc applied to each value' do
               ::Author.all.each do |author|
-                output_buffer.should have_tag("form div.#{cd_as} #{countable}[@value='#{author.login.reverse}']")
+                output_doc = output_buffer_to_nokogiri(output_buffer)
+                output_doc.should have_tag("form div.#{cd_as} #{countable}[@value='#{author.login.reverse}']")
               end
             end
           end
@@ -523,7 +578,8 @@ module CustomMacros
 
             it 'should have options with the proc applied to each value' do
               ::Author.all.each do |author|
-                output_buffer.should have_tag("form div.#{cd_as} #{countable}[@value='#{author.login.reverse}']")
+                output_doc = output_buffer_to_nokogiri(output_buffer)
+                output_doc.should have_tag("form div.#{cd_as} #{countable}[@value='#{author.login.reverse}']")
               end
             end
           end
@@ -531,6 +587,5 @@ module CustomMacros
 
       end
     end
-
   end
 end

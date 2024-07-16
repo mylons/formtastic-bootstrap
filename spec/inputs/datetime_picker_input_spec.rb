@@ -1,12 +1,12 @@
 # encoding: utf-8
 require 'spec_helper'
 
-describe 'datetime_picker input' do
+RSpec.describe 'datetime_picker input' do
 
   include FormtasticSpecHelper
 
   before do
-    @output_buffer = ''
+@output_buffer = ActionView::OutputBuffer.new
     mock_everything
   end
 
@@ -45,7 +45,8 @@ describe 'datetime_picker input' do
           concat(f.input(:publish_at, :as => :datetime_picker))
         end
       )
-      output_buffer.should have_tag "input[type='datetime-local']"
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag "input[type='datetime-local']"
     end
 
     it "can be set to true for a datetime-local" do
@@ -54,7 +55,8 @@ describe 'datetime_picker input' do
           concat(f.input(:publish_at, :as => :datetime_picker, :local => true))
         end
       )
-      output_buffer.should have_tag "input[type='datetime-local']"
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag "input[type='datetime-local']"
     end
 
     it "can be set to false for a datetime" do
@@ -63,7 +65,8 @@ describe 'datetime_picker input' do
           concat(f.input(:publish_at, :as => :datetime_picker, :local => false))
         end
       )
-      output_buffer.should have_tag "input[type='datetime']"
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag "input[type='datetime']"
     end
 
   end
@@ -76,7 +79,8 @@ describe 'datetime_picker input' do
           concat(f.input(:publish_at, :as => :datetime_picker))
         end
       )
-      output_buffer.should have_tag "input[size='16']"
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag "input[size='16']"
     end
 
     it "can be set from :input_html options" do
@@ -85,7 +89,8 @@ describe 'datetime_picker input' do
           concat(f.input(:publish_at, :as => :datetime_picker, :input_html => { :size => "11" }))
         end
       )
-      output_buffer.should have_tag "input[size='11']"
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag "input[size='11']"
     end
 
     it "can be set from options (ignoring input_html)" do
@@ -94,7 +99,8 @@ describe 'datetime_picker input' do
           concat(f.input(:publish_at, :as => :datetime_picker, :size => '12', :input_html => { :size => "11" }))
         end
       )
-      output_buffer.should have_tag "input[size='12']"
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag "input[size='12']"
     end
 
   end
@@ -107,7 +113,8 @@ describe 'datetime_picker input' do
           concat(f.input(:publish_at, :as => :datetime_picker))
         end
       )
-      output_buffer.should have_tag "input[maxlength='16']"
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag "input[maxlength='16']"
     end
 
     it "can be set from :input_html options" do
@@ -116,7 +123,8 @@ describe 'datetime_picker input' do
           concat(f.input(:publish_at, :as => :datetime_picker, :input_html => { :maxlength => "11" }))
         end
       )
-      output_buffer.should have_tag "input[maxlength='11']"
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag "input[maxlength='11']"
     end
 
     it "can be set from options (ignoring input_html)" do
@@ -125,7 +133,8 @@ describe 'datetime_picker input' do
           concat(f.input(:publish_at, :as => :datetime_picker, :maxlength => 12, :input_html => { :maxlength => "11" }))
         end
       )
-      output_buffer.should have_tag "input[maxlength='12']"
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag "input[maxlength='12']"
     end
 
   end
@@ -140,7 +149,8 @@ describe 'datetime_picker input' do
             concat(f.input(:publish_at, :as => :datetime_picker ))
           end
         )
-        output_buffer.should_not have_tag "li input[value]"
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should_not have_tag "li input[value]"
       end
 
       it "can be set from :input_html options" do
@@ -149,7 +159,8 @@ describe 'datetime_picker input' do
             concat(f.input(:publish_at, :as => :datetime_picker, :input_html => { :value => "1111-11-11 23:00" }))
           end
         )
-        output_buffer.should have_tag "input[value='1111-11-11 23:00']"
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should have_tag "input[value='1111-11-11 23:00']"
       end
 
     end
@@ -167,7 +178,8 @@ describe 'datetime_picker input' do
             concat(f.input(:publish_at, :as => :datetime_picker ))
           end
         )
-        output_buffer.should have_tag "input[value='#{@date.to_s}T00:00:00']"
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should have_tag "input[value='#{@date.to_s}T00:00:00']"
       end
 
       it "can be set from :input_html options" do
@@ -176,7 +188,8 @@ describe 'datetime_picker input' do
             concat(f.input(:publish_at, :as => :datetime_picker, :input_html => { :value => "1111-11-11T00:00:00" }))
           end
         )
-        output_buffer.should have_tag "input[value='1111-11-11T00:00:00']"
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should have_tag "input[value='1111-11-11T00:00:00']"
       end
 
     end
@@ -194,7 +207,8 @@ describe 'datetime_picker input' do
             concat(f.input(:publish_at, :as => :datetime_picker ))
           end
         )
-        output_buffer.should have_tag "input[value='2000-11-11T11:11:11']"
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should have_tag "input[value='2000-11-11T11:11:11']"
       end
 
       it "can be set from :input_html options" do
@@ -203,7 +217,8 @@ describe 'datetime_picker input' do
             concat(f.input(:publish_at, :as => :datetime_picker, :input_html => { :value => "1111-11-11T11:11:11" }))
           end
         )
-        output_buffer.should have_tag "input[value='1111-11-11T11:11:11']"
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should have_tag "input[value='1111-11-11T11:11:11']"
       end
 
     end
@@ -220,7 +235,8 @@ describe 'datetime_picker input' do
             concat(f.input(:publish_at, :as => :datetime_picker ))
           end
         )
-        output_buffer.should have_tag "input[value='']"
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should have_tag "input[value='']"
       end
 
       it "can be set from :input_html options" do
@@ -229,7 +245,8 @@ describe 'datetime_picker input' do
             concat(f.input(:publish_at, :as => :datetime_picker, :input_html => { :value => "1111-11-11T11:11:11" }))
           end
         )
-        output_buffer.should have_tag "input[value='1111-11-11T11:11:11']"
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should have_tag "input[value='1111-11-11T11:11:11']"
       end
 
     end
@@ -246,7 +263,8 @@ describe 'datetime_picker input' do
             concat(f.input(:publish_at, :as => :datetime_picker ))
           end
         )
-        output_buffer.should have_tag "input[value='yeah']"
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should have_tag "input[value='yeah']"
       end
 
       it "can be set from :input_html options" do
@@ -255,7 +273,8 @@ describe 'datetime_picker input' do
             concat(f.input(:publish_at, :as => :datetime_picker, :input_html => { :value => "1111-11-11T11:11:11" }))
           end
         )
-        output_buffer.should have_tag "input[value='1111-11-11T11:11:11']"
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should have_tag "input[value='1111-11-11T11:11:11']"
       end
 
     end
@@ -270,7 +289,8 @@ describe 'datetime_picker input' do
           concat(f.input(:publish_at, :as => :datetime_picker))
         end
       )
-      output_buffer.should_not have_tag "input[min]"
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should_not have_tag "input[min]"
     end
 
     it "can be set from :input_html options" do
@@ -279,7 +299,8 @@ describe 'datetime_picker input' do
           concat(f.input(:publish_at, :as => :datetime_picker, :input_html => { :min => "1970-01-01 12:00" }))
         end
       )
-      output_buffer.should have_tag "input[min='1970-01-01 12:00']"
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag "input[min='1970-01-01 12:00']"
     end
 
   end
@@ -292,7 +313,8 @@ describe 'datetime_picker input' do
           concat(f.input(:publish_at, :as => :datetime_picker))
         end
       )
-      output_buffer.should_not have_tag "input[max]"
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should_not have_tag "input[max]"
     end
 
     it "can be set from :input_html options" do
@@ -301,7 +323,8 @@ describe 'datetime_picker input' do
           concat(f.input(:publish_at, :as => :datetime_picker, :input_html => { :max => "1970-01-01 12:00" }))
         end
       )
-      output_buffer.should have_tag "input[max='1970-01-01 12:00']"
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag "input[max='1970-01-01 12:00']"
     end
 
   end
@@ -314,7 +337,8 @@ describe 'datetime_picker input' do
           concat(f.input(:publish_at, :as => :datetime_picker))
         end
       )
-      output_buffer.should have_tag "input[step='1']"
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag "input[step='1']"
     end
 
     it "can be set from :input_html options" do
@@ -323,7 +347,8 @@ describe 'datetime_picker input' do
           concat(f.input(:publish_at, :as => :datetime_picker, :input_html => { :step => "5" }))
         end
       )
-      output_buffer.should have_tag "input[step='5']"
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag "input[step='5']"
     end
 
     describe "macros" do
@@ -338,56 +363,64 @@ describe 'datetime_picker input' do
       context ":second" do
         let(:step) { :second }
         it "uses 1" do
-          output_buffer.should have_tag "input[step='1']"
+          output_doc = output_buffer_to_nokogiri(output_buffer)
+          output_doc.should have_tag "input[step='1']"
         end
       end
 
       context ":minute" do
         let(:step) { :minute }
         it "uses 60" do
-          output_buffer.should have_tag "input[step='60']"
+          output_doc = output_buffer_to_nokogiri(output_buffer)
+          output_doc.should have_tag "input[step='60']"
         end
       end
 
       context ":fifteen_minutes" do
         let(:step) { :fifteen_minutes }
         it "uses 900" do
-          output_buffer.should have_tag "input[step='900']"
+          output_doc = output_buffer_to_nokogiri(output_buffer)
+          output_doc.should have_tag "input[step='900']"
         end
       end
 
       context ":quarter_hour" do
         let(:step) { :quarter_hour }
         it "uses 900" do
-          output_buffer.should have_tag "input[step='900']"
+          output_doc = output_buffer_to_nokogiri(output_buffer)
+          output_doc.should have_tag "input[step='900']"
         end
       end
 
       context ":thirty_minutes" do
         let(:step) { :thirty_minutes }
         it "uses 1800" do
-          output_buffer.should have_tag "input[step='1800']"
+          output_doc = output_buffer_to_nokogiri(output_buffer)
+          output_doc.should have_tag "input[step='1800']"
         end
       end
 
       context ":half_hour" do
         let(:step) { :half_hour }
         it "uses 1800" do
-          output_buffer.should have_tag "input[step='1800']"
+          output_doc = output_buffer_to_nokogiri(output_buffer)
+          output_doc.should have_tag "input[step='1800']"
         end
       end
 
       context ":hour" do
         let(:step) { :hour }
         it "uses 3600" do
-          output_buffer.should have_tag "input[step='3600']"
+          output_doc = output_buffer_to_nokogiri(output_buffer)
+          output_doc.should have_tag "input[step='3600']"
         end
       end
 
       context ":sixty_minutes" do
         let(:step) { :sixty_minutes }
         it "uses 3600" do
-          output_buffer.should have_tag "input[step='3600']"
+          output_doc = output_buffer_to_nokogiri(output_buffer)
+          output_doc.should have_tag "input[step='3600']"
         end
       end
 
@@ -403,7 +436,8 @@ describe 'datetime_picker input' do
           concat(f.input(:publish_at, :as => :datetime_picker))
         end
       )
-      output_buffer.should_not have_tag "input[placeholder]"
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should_not have_tag "input[placeholder]"
     end
 
     it "can be set from :input_html options" do
@@ -412,7 +446,8 @@ describe 'datetime_picker input' do
           concat(f.input(:publish_at, :as => :datetime_picker, :input_html => { :placeholder => "1970-01-01T00:00:00" }))
         end
       )
-      output_buffer.should have_tag "input[placeholder='1970-01-01T00:00:00']"
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag "input[placeholder='1970-01-01T00:00:00']"
     end
 
     context "with i18n set" do
@@ -425,7 +460,8 @@ describe 'datetime_picker input' do
           concat(semantic_form_for(@new_post) do |builder|
             concat(builder.input(:publish_at, :as => :datetime_picker))
           end)
-          output_buffer.should have_tag('input[@placeholder="YYYY-MM-DD HH:MM"]')
+          output_doc = output_buffer_to_nokogiri(output_buffer)
+          output_doc.should have_tag('input[@placeholder="YYYY-MM-DD HH:MM"]')
         end
       end
 
@@ -434,7 +470,8 @@ describe 'datetime_picker input' do
           concat(semantic_form_for(@new_post) do |builder|
             concat(builder.input(:publish_at, :as => :datetime_picker, :input_html => { :placeholder => "Something" }))
           end)
-          output_buffer.should have_tag('input[@placeholder="Something"]')
+          output_doc = output_buffer_to_nokogiri(output_buffer)
+          output_doc.should have_tag('input[@placeholder="Something"]')
         end
       end
     end
@@ -454,7 +491,7 @@ describe 'datetime_picker input' do
 
   describe "when index is provided" do
     before do
-      @output_buffer = ''
+@output_buffer = ActionView::OutputBuffer.new
       mock_everything
 
       concat(semantic_form_for(@new_post) do |builder|
@@ -465,15 +502,18 @@ describe 'datetime_picker input' do
     end
 
     it 'should index the id of the wrapper' do
-      output_buffer.should have_tag("div#post_author_attributes_3_created_at_input")
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag("div#post_author_attributes_3_created_at_input")
     end
 
     it 'should index the id of the select tag' do
-      output_buffer.should have_tag("input#post_author_attributes_3_created_at")
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag("input#post_author_attributes_3_created_at")
     end
 
     it 'should index the name of the select tag' do
-      output_buffer.should have_tag("input[@name='post[author_attributes][3][created_at]']")
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      output_doc.should have_tag("input[@name='post[author_attributes][3][created_at]']")
     end
   end
 
@@ -483,7 +523,8 @@ describe 'datetime_picker input' do
         concat(semantic_form_for(@new_post) do |builder|
           concat(builder.input(:publish_at, :as => :datetime_picker, :required => true))
         end)
-        output_buffer.should have_tag("input[@required]")
+        output_doc = output_buffer_to_nokogiri(output_buffer)
+        output_doc.should have_tag("input[@required]")
       end
     end
   end

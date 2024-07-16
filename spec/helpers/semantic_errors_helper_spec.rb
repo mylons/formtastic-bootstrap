@@ -1,12 +1,12 @@
 # encoding: utf-8
 require 'spec_helper'
 
-describe 'FormtasticBootstrap::FormBuilder#semantic_errors' do
+RSpec.describe 'FormtasticBootstrap::FormBuilder#semantic_errors' do
 
   include FormtasticSpecHelper
 
   before do
-    @output_buffer = ''
+@output_buffer = ActionView::OutputBuffer.new
     mock_everything
     @title_errors = ['must not be blank', 'must be awesome']
     @base_errors = ['base error message', 'nasty error']
