@@ -1,0 +1,1 @@
+/Users/michaellyons/.rvm/gems/ruby-3.1.5/gems/formtastic-4.0.0/spec/schema.rb
