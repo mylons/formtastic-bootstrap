@@ -9,7 +9,6 @@ RSpec.describe 'hidden input' do
 @output_buffer = ActionView::OutputBuffer.new
     mock_everything
 
-    with_deprecation_silenced do
       concat(semantic_form_for(@new_post) do |builder|
         concat(builder.input(:secret, :as => :hidden))
         concat(builder.input(:author_id, :as => :hidden, :value => 99))
@@ -17,7 +16,6 @@ RSpec.describe 'hidden input' do
         concat(builder.input(:reviewer, :as => :hidden, :input_html => {:class => 'new_post_reviewer', :id => 'new_post_reviewer'}))
         concat(builder.input(:author, :as => :hidden, :value => 'direct_value', :input_html => {:value => "formtastic_value"}))
       end)
-    end
   end
 
   it_should_have_bootstrap_horizontal_wrapping
@@ -84,7 +82,6 @@ RSpec.describe 'hidden input' do
 @output_buffer = ActionView::OutputBuffer.new
       mock_everything
 
-      with_deprecation_silenced do
         concat(semantic_form_for(@new_post, :namespace => 'context2') do |builder|
           concat(builder.input(:secret, :as => :hidden))
           concat(builder.input(:author_id, :as => :hidden, :value => 99))
@@ -92,7 +89,6 @@ RSpec.describe 'hidden input' do
           concat(builder.input(:reviewer, :as => :hidden, :input_html => {:class => 'new_post_reviewer', :id => 'new_post_reviewer'}))
           concat(builder.input(:author, :as => :hidden, :value => 'direct_value', :input_html => {:value => "formtastic_value"}))
         end)
-      end
     end
 
     attributes_to_check = [:secret, :author_id, :published, :reviewer]

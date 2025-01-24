@@ -30,13 +30,11 @@ RSpec.describe 'deprecated time, datetime and date inputs' do
   end
 
   it 'should use wrapper css class based off :as, not off their parent class' do
-    with_deprecation_silenced do
-      concat(semantic_form_for(@new_post) do |f|
-        concat(f.input :created_at, :as => :time)
-        concat(f.input :created_at, :as => :datetime)
-        concat(f.input :created_at, :as => :date)
-      end)
-    end
+    concat(semantic_form_for(@new_post) do |f|
+      concat(f.input :created_at, :as => :time)
+      concat(f.input :created_at, :as => :datetime)
+      concat(f.input :created_at, :as => :date)
+    end)
     output_doc = output_buffer_to_nokogiri(output_buffer)
     output_doc.should have_tag('div.form-group.time')
     output_doc.should have_tag('div.form-group.datetime')

@@ -12,12 +12,14 @@ module FormtasticBootstrap
         end
 
         def input_html_options
-          if errors?
-            {
-              :class => "error"
-            }.merge(super)
-          else
-            super
+          Rails.application.deprecators.silence do
+            if errors?
+              {
+                :class => "error"
+              }.merge(super)
+            else
+                super
+            end
           end
         end
 

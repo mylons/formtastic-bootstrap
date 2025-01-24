@@ -689,14 +689,12 @@ RSpec.describe 'FormtasticBootstrap::FormBuilder#input' do
         end
 
 				it 'should have a custom hint class if I ask for one' do
-          with_deprecation_silenced do
             hint_text = "this is the title of the post"
             concat(semantic_form_for(@new_post) do |builder|
               concat(builder.input(:title, :hint => hint_text, :hint_class => 'custom-hint-class'))
             end)
             output_doc = output_buffer_to_nokogiri(output_buffer)
             output_doc.should have_tag("form div span.custom-hint-class", hint_text)
-          end
         end
         context "defaults" do
           before do
@@ -763,11 +761,9 @@ RSpec.describe 'FormtasticBootstrap::FormBuilder#input' do
                        }
                      }
                   }
-                with_deprecation_silenced do
-                  concat(semantic_form_for(@new_post) do |builder|
-                    concat(builder.input(:title, :hint => true, :hint_class => 'custom-hint-class'))
-                  end)
-                end
+                concat(semantic_form_for(@new_post) do |builder|
+                  concat(builder.input(:title, :hint => true, :hint_class => 'custom-hint-class'))
+                end)
                 output_doc = output_buffer_to_nokogiri(output_buffer)
                 output_doc.should have_tag('form div span.custom-hint-class', @localized_hint_text)
               end

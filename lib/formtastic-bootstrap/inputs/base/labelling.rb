@@ -6,11 +6,13 @@ module FormtasticBootstrap
         include Formtastic::Inputs::Base::Labelling
 
         def label_html_options
-          super.tap do |options|
-            # Bootstrap defines class 'label' too, so remove the
-            # one that gets created by Formtastic.
-            options[:class] = options[:class].reject { |c| c == 'label' }
-            options[:class] << " control-label"
+          Rails.application.deprecators.silence do
+            super.tap do |options|
+              # Bootstrap defines class 'label' too, so remove the
+              # one that gets created by Formtastic.
+              options[:class] = options[:class].reject { |c| c == 'label' }
+              options[:class] << " control-label"
+            end
           end
         end
 
