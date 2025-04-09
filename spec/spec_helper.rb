@@ -9,7 +9,9 @@ $LOAD_PATH.unshift(File.dirname(__FILE__))
 
 # Find Formtastic and grab its testing support first.
 formtastic_full_gem_path = Bundler.load.specs.find{|s| s.name == "formtastic" }.full_gem_path
-require File.join(formtastic_full_gem_path, 'spec', 'spec_helper.rb')
+full_path = File.join(formtastic_full_gem_path, 'spec', 'spec_helper.rb')
+puts "full path: #{full_path}"
+require full_path
 
 # Now add in ours.
 require 'formtastic-bootstrap'

@@ -5,6 +5,13 @@ module FormtasticBootstrap
 
         include Formtastic::Inputs::Base::Wrapping
 
+        def wrapper_classes
+          classes = super.split(' ')
+          classes << "form-group"
+          classes << "has-error" if errors?
+          classes.join(' ')
+        end
+
         def bootstrap_wrapping(&block)
           form_group_wrapping do
             label_html <<
@@ -46,13 +53,6 @@ module FormtasticBootstrap
             template.capture(&block).html_safe,
             wrapper_html_options
           )
-        end
-
-        def wrapper_html_options
-          super.tap do |options|
-            options[:class] << " form-group"
-            options[:class] << " has-error" if errors?
-          end
         end
 
         def add_on_wrapper_classes(options)

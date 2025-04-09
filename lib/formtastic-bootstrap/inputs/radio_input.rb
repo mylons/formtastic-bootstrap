@@ -1,6 +1,6 @@
 module FormtasticBootstrap
   module Inputs
-    class RadioInput < Formtastic::Inputs::RadioInput
+    class RadioInput
       include Base
       include Base::Choices
 

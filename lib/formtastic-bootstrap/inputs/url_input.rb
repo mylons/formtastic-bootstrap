@@ -1,6 +1,6 @@
 module FormtasticBootstrap
   module Inputs
-    class UrlInput < Formtastic::Inputs::UrlInput
+    class UrlInput
       include Base
       include Base::Stringish
 

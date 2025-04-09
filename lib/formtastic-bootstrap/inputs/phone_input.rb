@@ -1,6 +1,6 @@
 module FormtasticBootstrap
   module Inputs
-    class PhoneInput < Formtastic::Inputs::PhoneInput
+    class PhoneInput
       include Base
       include Base::Stringish
 

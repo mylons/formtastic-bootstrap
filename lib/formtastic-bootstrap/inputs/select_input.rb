@@ -1,9 +1,9 @@
 module FormtasticBootstrap
   module Inputs
-    class SelectInput < Formtastic::Inputs::SelectInput
-
-      include Base
-      include Base::Collections
+    # Uses mixins, not inheritance, following Formtastic 5.0 pattern
+    class SelectInput
+      include Base # Ensure local Base helpers are included
+      include Base::Collections # Include local Collections customizations/overrides
 
       def to_html
         bootstrap_wrapping do

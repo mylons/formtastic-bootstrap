@@ -1,18 +1,37 @@
 module FormtasticBootstrap
   module Inputs
-    class CheckBoxesInput < Formtastic::Inputs::CheckBoxesInput
+    class CheckBoxesInput
       include Base
       include Base::Choices
+      include Base::Collections
 
       # TODO Make sure help blocks work correctly.
 
       def to_html
         bootstrap_wrapping do
-          hidden_field_for_all << # Might need to remove this guy.
+          hidden_field_for_all << # Now this method will exist
           collection.map { |choice|
             choice_html(choice)
           }.join("\n").html_safe
         end
+      end
+
+      # Copied from Formtastic 5.0
+      def hidden_field_for_all
+        if hidden_fields_for_every?
+          +''
+        else
+          options = {}
+          # Note: Removed class/id generation specific to Formtastic's fieldset>ol structure
+          # options[:class] = [method.to_s.singularize, 'default'].join('_') if value_as_class?
+          # options[:id] = [object_name, method, 'none'].join('_')
+          template.hidden_field_tag(input_name, '', options)
+        end
+      end
+
+      # Copied from Formtastic 5.0
+      def hidden_fields_for_every?
+        options[:hidden_fields]
       end
 
       def choice_html(choice)
@@ -38,6 +57,93 @@ module FormtasticBootstrap
       def choice_label(choice)
         label = choice.is_a?(Array) ? choice.first : choice
         template.content_tag(:span, ERB::Util.html_escape(label.to_s))
+      end
+
+      # Copied from Formtastic 5.0
+      def check_box_with_hidden_input(choice)
+        value = choice_value(choice)
+        # Need association_primary_key, extra_html_options, disabled?, unchecked_value
+        builder.check_box(
+          association_primary_key || method,
+          extra_html_options(choice).merge(:id => choice_input_dom_id(choice), :name => input_name, :disabled => disabled?(value), :required => false),
+          value,
+          unchecked_value
+        )
+      end
+
+      # Copied from Formtastic 5.0
+      def check_box_without_hidden_input(choice)
+        value = choice_value(choice)
+        # Need input_name, checked?, extra_html_options, disabled?
+        template.check_box_tag(
+          input_name,
+          value,
+          checked?(value),
+          extra_html_options(choice).merge(:id => choice_input_dom_id(choice), :disabled => disabled?(value), :required => false)
+        )
+      end
+
+      # Need helper methods called by the checkbox methods above
+      # Copied from Formtastic 5.0
+      def extra_html_options(choice)
+        input_html_options.merge(custom_choice_html_options(choice))
+      end
+
+      # Copied from Formtastic 5.0
+      def checked?(value)
+        selected_values.include?(value)
+      end
+
+      # Copied from Formtastic 5.0
+      def disabled?(value)
+        disabled_values.include?(value)
+      end
+
+      # Copied from Formtastic 5.0
+      def selected_values
+        @selected_values ||= make_selected_values
+      end
+
+      # Copied from Formtastic 5.0
+      def disabled_values
+        vals = options[:disabled] || []
+        vals = [vals] unless vals.is_a?(Array)
+        vals
+      end
+
+      # Copied from Formtastic 5.0
+      def unchecked_value
+        options[:unchecked_value] || ''
+      end
+
+      # Copied from Formtastic 5.0
+      def input_name
+        if builder.options.key?(:index)
+          "#{object_name}[#{builder.options[:index]}][#{association_primary_key || method}][]"
+        else
+          "#{object_name}[#{association_primary_key || method}][]"
+        end
+      end
+      
+      # Copied from Formtastic 5.0 (needed by selected_values)
+      # Using the more accurate logic from Formtastic 5.0 source
+      def make_selected_values
+        if object.respond_to?(method)
+          selected_items = object.send(method)
+          selected_items = [*selected_items].compact.flatten
+
+          selected_items.map do |selected_item|
+            # Use value_method (from Base::Collections) to get the ID or configured value
+            selected_item_id = selected_item.id if selected_item.respond_to? :id
+            send_or_call_or_object(value_method, selected_item) || selected_item_id
+          end.compact
+        else
+          []
+        end
+      end
+      
+      def reflection
+        @reflection ||= builder.reflection_for(method)
       end
 
     end

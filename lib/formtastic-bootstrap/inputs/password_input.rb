@@ -1,6 +1,6 @@
 module FormtasticBootstrap
   module Inputs
-    class PasswordInput < Formtastic::Inputs::PasswordInput
+    class PasswordInput
       include Base
       include Base::Stringish
 

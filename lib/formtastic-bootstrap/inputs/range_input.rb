@@ -1,7 +1,8 @@
 module FormtasticBootstrap
   module Inputs
-    class RangeInput < Formtastic::Inputs::RangeInput
+    class RangeInput
       include Base
+      include Base::Numeric
       include Base::Stringish
 
       def to_html

@@ -1,8 +1,10 @@
 module FormtasticBootstrap
   module Inputs
-    class DatetimeSelectInput < Formtastic::Inputs::DatetimeSelectInput
+    class DatetimeSelectInput
       include Base
-      include Base::Timeish
+      include Base::DatetimePickerish
+      # Formtastic 5.0 DatetimeSelectInput includes Base::Timeish
+
     end
   end
 end

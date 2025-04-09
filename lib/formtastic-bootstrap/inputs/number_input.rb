@@ -1,6 +1,6 @@
 module FormtasticBootstrap
   module Inputs
-    class NumberInput < Formtastic::Inputs::NumberInput
+    class NumberInput
       include Base
       include Base::Numeric
 

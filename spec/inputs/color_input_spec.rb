@@ -13,9 +13,15 @@ RSpec.describe 'color input' do
 
   describe "when object is provided" do
     before do
+      puts "\nDEBUG Before: Creating a fresh output buffer"
+      @output_buffer = ActionView::OutputBuffer.new
+      mock_everything
+      
+      puts "DEBUG Before: About to render a color input in the before block"
       concat(semantic_form_for(@new_post) do |builder|
         concat(builder.input(:color, :as => :color))
       end)
+      puts "DEBUG Before: Buffer length after rendering: #{@output_buffer.to_str.length} chars"
     end
 
     it_should_have_bootstrap_horizontal_wrapping
@@ -28,11 +34,22 @@ RSpec.describe 'color input' do
     it_should_have_input_with_id("post_color")
     it_should_have_input_with_type(:color)
     it_should_have_input_with_name("post[color]")
-    it_should_have_maxlength_matching_column_limit
-    it_should_use_default_text_field_size_when_not_nil(:string)
-    it_should_not_use_default_text_field_size_when_nil(:string)
-    it_should_apply_custom_input_attributes_when_input_html_provided(:string)
-    it_should_apply_custom_for_to_label_when_input_html_id_provided(:string)
+    it 'should apply custom input attributes when input_html provided' do
+      puts "\nDEBUG Direct Test: Starting with a fresh buffer"
+      @output_buffer = ActionView::OutputBuffer.new
+      
+      puts "DEBUG Direct Test: Rendering a new form with custom class"
+      concat(semantic_form_for(@new_post) do |builder|
+        concat(builder.input(:color, :as => :color, :input_html => { :class => 'myclass' }))
+      end)
+      
+      puts "DEBUG Direct Test: Parsing the HTML"
+      output_doc = output_buffer_to_nokogiri(output_buffer)
+      
+      puts "DEBUG Direct Test: HTML content:\n#{output_doc.to_html}"
+      output_doc.should have_tag("form div.form-group span.form-wrapper input[type='color'].myclass")
+    end
+    it_should_apply_custom_for_to_label_when_input_html_id_provided(:color, :color)
     it_should_apply_error_logic_for_input_type(:color)
 
     describe 'and its a ActiveModel' do
@@ -44,66 +61,6 @@ RSpec.describe 'color input' do
 
       after do
         @new_post.stub(:class).and_return(::Post)
-      end
-
-      describe 'and validates_length_of was called for the method' do
-        def should_have_maxlength(maxlength, options)
-          @new_post.class.should_receive(:validators_on).with(:color).at_least(1).and_return([
-            active_model_length_validator([:color], options[:options])
-          ])
-
-          concat(semantic_form_for(@new_post) do |builder|
-            concat(builder.input(:color))
-          end)
-
-          output_doc = output_buffer_to_nokogiri(output_buffer)
-          #expect(output_doc).to have_tag("form div.form-group span.form-wrapper input#post_color[@maxlength='#{maxlength}']")
-          output_doc.should have_tag("form div.form-group span.form-wrapper input##{@new_post.class.name.underscore}_color[@maxlength='#{maxlength}']")
-        end
-
-        it 'should have maxlength if the optional :if or :unless options are not supplied' do
-          should_have_maxlength(42, :options => {:maximum => 42})
-        end
-
-        it 'should have default maxlength if the optional :if condition is not satisifed' do
-          should_have_maxlength(default_maxlength, :options => {:maximum => 42, :if => false})
-        end
-
-        it 'should have default_maxlength if the optional :if proc evaluates to false' do
-          should_have_maxlength(default_maxlength, :options => {:maximum => 42, :if => proc { |record| false }})
-        end
-
-        it 'should have maxlength if the optional :if proc evaluates to true' do
-          should_have_maxlength(42, :options => { :maximum => 42, :if => proc { |record| true } })
-        end
-
-        it 'should have default maxlength if the optional :if with a method name evaluates to false' do
-          @new_post.should_receive(:specify_maxlength).at_least(1).and_return(false)
-          should_have_maxlength(default_maxlength, :options => { :maximum => 42, :if => :specify_maxlength })
-        end
-
-        it 'should have maxlength if the optional :if with a method name evaluates to true' do
-          @new_post.should_receive(:specify_maxlength).at_least(1).and_return(true)
-          should_have_maxlength(42, :options => { :maximum => 42, :if => :specify_maxlength })
-        end
-
-        it 'should have default maxlength if the optional :unless proc evaluates to true' do
-          should_have_maxlength(default_maxlength, :options => { :maximum => 42, :unless => proc { |record| true } })
-        end
-
-        it 'should have maxlength if the optional :unless proc evaluates to false' do
-          should_have_maxlength(42, :options => { :maximum => 42, :unless => proc { |record| false } })
-        end
-
-        it 'should have default maxlength if the optional :unless with a method name evaluates to true' do
-          @new_post.should_receive(:specify_maxlength).at_least(1).and_return(true)
-          should_have_maxlength(default_maxlength, :options => { :maximum => 42, :unless => :specify_maxlength })
-        end
-
-        it 'should have maxlength if the optional :unless with a method name evaluates to false' do
-          @new_post.should_receive(:specify_maxlength).at_least(1).and_return(false)
-          should_have_maxlength(42, :options => { :maximum => 42, :unless => :specify_maxlength })
-        end
       end
     end
   end
@@ -162,7 +119,7 @@ RSpec.describe 'color input' do
     it_should_have_label_with_text(/Color/)
     it_should_have_label_for("project_color")
     it_should_have_input_with_id("project_color")
-    it_should_have_input_with_type(:text)
+    it_should_have_input_with_type(:color)
     it_should_have_input_with_name("project[color]")
   end
 

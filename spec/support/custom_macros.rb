@@ -153,23 +153,53 @@ module CustomMacros
       end
     end
 
-    def it_should_apply_custom_input_attributes_when_input_html_provided(as)
+    def it_should_apply_custom_input_attributes_when_input_html_provided(as, method_name = :title)
       it 'it should apply custom input attributes when input_html provided' do
+        puts "\nDEBUG Macro: Received :as => #{as.inspect}, method_name => #{method_name.inspect}"
+        puts "DEBUG Macro: Output buffer class before test: #{@output_buffer.class}"
+        puts "DEBUG Macro: Output buffer methods: #{@output_buffer.methods.grep(/clear|empty/).inspect}"
+        puts "DEBUG Macro: Output buffer content before test: #{@output_buffer.to_str.length} chars"
+        
+        # Start with a fresh buffer instead of trying to clear the existing one
+        # This is a safer approach than trying to clear the existing buffer
+        original_buffer = @output_buffer
+        @output_buffer = ActionView::OutputBuffer.new
+        
+        puts "DEBUG Macro: Rendering input(#{method_name.inspect}, :as => #{as.inspect}, :input_html => { :class => 'myclass' })"
         concat(semantic_form_for(@new_post) do |builder|
-          concat(builder.input(:title, :as => as, :input_html => { :class => 'myclass' }))
+          concat(builder.input(method_name, :as => as, :input_html => { :class => 'myclass' }))
         end)
+        
         output_doc = output_buffer_to_nokogiri(output_buffer)
-        output_doc.should have_tag("form div.form-group span.form-wrapper input.myclass")
+        puts "\nDEBUG Macro: Final HTML for this test only:\n#{output_doc.to_html}\n---"
+        
+        # Test the assertion
+        input_type = case as
+          when :color then 'color'
+          when :date_picker then 'date'
+          else 'text'
+        end
+        output_doc.should have_tag("form div.form-group span.form-wrapper input[type='#{input_type}'].myclass")
+        
+        # Restore the original buffer - don't modify global state permanently
+        @output_buffer = original_buffer
       end
     end
 
-    def it_should_apply_custom_for_to_label_when_input_html_id_provided(as)
+    def it_should_apply_custom_for_to_label_when_input_html_id_provided(as, method_name = :title)
       it 'it should apply custom for to label when input_html :id provided' do
+        # Create a fresh buffer to avoid interference from previous tests
+        original_buffer = @output_buffer
+        @output_buffer = ActionView::OutputBuffer.new
+        
         concat(semantic_form_for(@new_post) do |builder|
-          concat(builder.input(:title, :as => as, :input_html => { :id => 'myid' }))
+          concat(builder.input(method_name, :as => as, :input_html => { :id => 'myid' }))
         end)
         output_doc = output_buffer_to_nokogiri(output_buffer)
         output_doc.should have_tag('form div.form-group label.control-label[@for="myid"]')
+        
+        # Restore the original buffer
+        @output_buffer = original_buffer
       end
     end
 
