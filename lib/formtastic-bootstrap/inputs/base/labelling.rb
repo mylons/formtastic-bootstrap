@@ -9,7 +9,6 @@ module FormtasticBootstrap
         include Formtastic::Inputs::Base::Labelling
 
         def label_html_options
-          
           with_deprecation_silenced do
             # Implement the necessary logic directly.
             options = {}
@@ -25,8 +24,7 @@ module FormtasticBootstrap
             begin
               input_opts = input_html_options if respond_to?(:input_html_options)
             rescue => e
-              puts "DEBUG: Error getting input_html_options: #{e.class} - #{e.message}"
-              puts "DEBUG: Backtrace: #{e.backtrace.first(5).join("\n")}"
+              # Log error if needed, but don't stop execution
             end
 
             # If a custom id is provided via :input_html, it takes precedence

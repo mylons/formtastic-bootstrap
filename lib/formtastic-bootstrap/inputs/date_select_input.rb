@@ -12,37 +12,11 @@ module FormtasticBootstrap
       }
 
       def to_html
-        puts "DEBUG: DateSelectInput#to_html"
-        puts "DEBUG: self.class: #{self.class}"
-        puts "DEBUG: self.class.ancestors: #{self.class.ancestors.map(&:to_s).join(', ')}"
-        puts "DEBUG: respond_to?(:input_html_options): #{respond_to?(:input_html_options)}"
-        
-        begin
-          opts = options
-          puts "DEBUG: options: #{opts.keys.join(', ')}"
-          
-          # Check what methods are available from Formtastic
-          puts "DEBUG: Formtastic::Inputs::DateSelectInput instance methods: #{Formtastic::Inputs::DateSelectInput.instance_methods(false).join(', ')}"
-          puts "DEBUG: Formtastic::Inputs::Base instance methods: #{Formtastic::Inputs::Base.instance_methods(false).join(', ')}"
-          
-          # Check for DatetimePickerish methods
-          if self.class.ancestors.include?(FormtasticBootstrap::Inputs::Base::DatetimePickerish)
-            puts "DEBUG: DatetimePickerish included"
-            puts "DEBUG: DatetimePickerish instance methods: #{FormtasticBootstrap::Inputs::Base::DatetimePickerish.instance_methods(false).join(', ')}"
-          end
-          
-          super
-        rescue => e
-          puts "DEBUG: Error in to_html: #{e.class} - #{e.message}"
-          puts "DEBUG: Backtrace: #{e.backtrace.first(10).join("\n")}"
-          raise
-        end
+        super
       end
       
       # Complete implementation of input_html_options
       def input_html_options
-        puts "DEBUG: DateSelectInput#input_html_options called"
-        
         # Start with a new hash
         new_options = {}
         
@@ -71,7 +45,6 @@ module FormtasticBootstrap
           new_options[:placeholder] = options[:placeholder]
         end
         
-        puts "DEBUG: Final input_html_options: #{new_options.inspect}"
         new_options
       end
     end

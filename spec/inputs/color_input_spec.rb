@@ -13,15 +13,12 @@ RSpec.describe 'color input' do
 
   describe "when object is provided" do
     before do
-      puts "\nDEBUG Before: Creating a fresh output buffer"
       @output_buffer = ActionView::OutputBuffer.new
       mock_everything
-      
-      puts "DEBUG Before: About to render a color input in the before block"
+
       concat(semantic_form_for(@new_post) do |builder|
         concat(builder.input(:color, :as => :color))
       end)
-      puts "DEBUG Before: Buffer length after rendering: #{@output_buffer.to_str.length} chars"
     end
 
     it_should_have_bootstrap_horizontal_wrapping
@@ -35,18 +32,14 @@ RSpec.describe 'color input' do
     it_should_have_input_with_type(:color)
     it_should_have_input_with_name("post[color]")
     it 'should apply custom input attributes when input_html provided' do
-      puts "\nDEBUG Direct Test: Starting with a fresh buffer"
       @output_buffer = ActionView::OutputBuffer.new
-      
-      puts "DEBUG Direct Test: Rendering a new form with custom class"
+
       concat(semantic_form_for(@new_post) do |builder|
         concat(builder.input(:color, :as => :color, :input_html => { :class => 'myclass' }))
       end)
-      
-      puts "DEBUG Direct Test: Parsing the HTML"
+
       output_doc = output_buffer_to_nokogiri(output_buffer)
-      
-      puts "DEBUG Direct Test: HTML content:\n#{output_doc.to_html}"
+
       output_doc.should have_tag("form div.form-group span.form-wrapper input[type='color'].myclass")
     end
     it_should_apply_custom_for_to_label_when_input_html_id_provided(:color, :color)
