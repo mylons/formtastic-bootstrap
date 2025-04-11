@@ -169,6 +169,8 @@ module CustomMacros
         input_type = case as
           when :color then 'color'
           when :date_picker then 'date'
+          when :datetime_picker then 'datetime-local'
+          when :password then 'password'
           else 'text'
         end
         output_doc.should have_tag("form div.form-group span.form-wrapper input[type='#{input_type}'].myclass")

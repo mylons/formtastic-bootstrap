@@ -10,6 +10,11 @@ module FormtasticBootstrap
         end
       end
 
+      def input_html_options
+        super.tap do |options|
+          options[:step] ||= "any"
+        end
+      end
     end
   end
 end

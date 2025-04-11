@@ -1,15 +1,26 @@
 module FormtasticBootstrap
   module Inputs
     class HiddenInput
-      include Base
-      # Note: HiddenInput in Formtastic 5.0 also includes Formtastic::Inputs::Base::Stringish
-      # but we seem to handle wrapping differently here, so we might not need it.
-      # Consider adding `include Base::Stringish` if issues arise.
+      include Formtastic::Inputs::Base
+      include Base::Html
+      include Base::Wrapping
+      include Base::Hints
+      include Base::Errors
 
       def to_html
         bootstrap_wrapping do
           builder.hidden_field(method, input_html_options)
         end
+      end
+
+      def input_html_options
+        super.tap do |options|
+          options.delete(:autofocus)
+        end
+      end
+
+      def error_list_html(ignore)
+        ""
       end
     end
   end

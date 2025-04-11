@@ -8,10 +8,16 @@ module FormtasticBootstrap
 
       def to_html
         bootstrap_wrapping do
-          collection.map { |choice|
-            choice_html(choice)
-          }.join("\n").html_safe
+          choices_wrapper do
+            collection.map { |choice|
+              choice_html(choice)
+            }.join("\n").html_safe
+          end
         end
+      end
+      
+      def choices_wrapper(&block)
+        template.capture(&block).html_safe
       end
 
       def wrapper_html_options
