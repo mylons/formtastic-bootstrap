@@ -13,9 +13,15 @@ module FormtasticBootstrap
             # Implement the necessary logic directly.
             options = {}
             
-            # Use input_dom_id, which should be available from included Formtastic modules,
-            # to generate the correct ID for the 'for' attribute.
-            options[:for] = input_dom_id if respond_to?(:input_dom_id)
+            # Special case for belongs_to associations in select inputs
+            if self.is_a?(FormtasticBootstrap::Inputs::SelectInput) && 
+               self.respond_to?(:belongs_to_association?) && 
+               self.belongs_to_association?
+              
+              options[:for] = "#{self.object_name}_#{self.method}_id"
+            else
+              options[:for] = input_dom_id if respond_to?(:input_dom_id)
+            end
             
             options[:class] = [] # Start with an empty array
 
@@ -48,12 +54,11 @@ module FormtasticBootstrap
               label_options = {:class => "control-label"} # Minimal fallback
             end
             
-            template.content_tag(:span, :class => 'form-label') do
-              begin
-                builder.label(method, label_text, label_options)
-              rescue => e
-                "Label Error".html_safe # Basic error display
-              end
+            # Don't wrap with span.form-label as tests expect label directly inside div.form-group
+            begin
+              builder.label(method, label_text, label_options)
+            rescue => e
+              "Label Error".html_safe # Basic error display
             end
           else
             "".html_safe

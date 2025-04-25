@@ -20,9 +20,18 @@ module FormtasticBootstrap
       end
 
       def input_options
-        options = super
-        options.merge!(:include_blank => include_blank)
-        options
+        opts = super
+        opts.merge!(:include_blank => include_blank)
+        
+        # Fix selected option handling
+        if options[:selected]
+          opts[:selected] = options[:selected]
+        elsif object && object.respond_to?(method) && !object.send(method).blank?
+          # Use object's value if available
+          opts[:selected] = object.send(method)
+        end
+        
+        opts
       end
 
       def input_html_options
@@ -31,6 +40,12 @@ module FormtasticBootstrap
         # Special case for Mongoid tests
         if method.to_s == 'mongoid_reviewer'
           opts[:id] = "#{object_name}_reviewer_id"
+        end
+        
+        # Always set correct ID for belongs_to associations
+        if belongs_to_association?
+          # Direct ID assignment for belongs_to
+          opts[:id] = "#{object_name}_#{method}_id"
         end
         
         opts.merge!(extra_input_html_options)
@@ -48,7 +63,20 @@ module FormtasticBootstrap
         if multiple?
           "#{object_name}[#{association_primary_key || method.to_s.singularize}_ids][]"
         else
-          "#{object_name}[#{association_primary_key || method}]"
+          # For belongs_to associations, we need to append _id to match the expected name
+          if belongs_to_association?
+            "#{object_name}[#{association_primary_key || method}_id]"
+          else
+            "#{object_name}[#{association_primary_key || method}]"
+          end
+        end
+      end
+
+      def input_dom_id
+        if belongs_to_association?
+          "#{object_name}_#{method}_id"
+        else
+          super
         end
       end
 
