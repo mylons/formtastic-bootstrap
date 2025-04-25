@@ -142,8 +142,32 @@ RSpec.describe 'select input' do
 
   describe 'for a belongs_to association' do
     before do
+      # Set expectation *before* rendering for the :author association
+      if @new_post && defined?(::Post) && ::Post.respond_to?(:reflect_on_association) && ::Post.reflect_on_association(:author)
+         # Mock reflection for :author only where needed for collection lookup check
+         author_reflection_double = double('author_reflection', 
+                                         :klass => ::Author, 
+                                         :macro => :belongs_to, 
+                                         :options => {}, 
+                                         :name => :author, 
+                                         :scope => nil,
+                                         :respond_to? => true # Make it respond to common checks
+                                        )
+         # Allow it to respond true to :scope check even if nil
+         allow(author_reflection_double).to receive(:respond_to?).with(:scope).and_return(true)
+         allow(author_reflection_double).to receive(:respond_to?).with(:options).and_return(true)
+         allow(::Post).to receive(:reflect_on_association).with(:author).and_return(author_reflection_double)
+         
+         # Stub reviewer association minimally if necessary, assume it doesn't trigger default collection
+         allow(::Post).to receive(:reflect_on_association).with(:reviewer)
+
+         # Expect Author.where for the :author input
+         expect(::Author).to receive(:where).with({}).at_least(:once).and_return(@authors || []) 
+      end
+
       concat(semantic_form_for(@new_post) do |builder|
         concat(builder.input(:author, :as => :select))
+        # NOTE: reviewer might have an explicit collection, or something different?
         concat(builder.input(:reviewer, :as => :select))
       end)
       @output_doc = output_buffer_to_nokogiri(output_buffer)

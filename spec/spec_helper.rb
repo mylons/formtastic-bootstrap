@@ -19,10 +19,14 @@ Dir[File.join(File.dirname(__FILE__), "support", "**/*.rb")].each { |f| require 
 
 # Helper method to convert the output buffer to a Nokogiri document
 def output_buffer_to_nokogiri(output_buffer)
-  Nokogiri::HTML::DocumentFragment.parse(output_buffer)
-  #Nokogiri::HTML(output_buffer.to_s)
+  buffer_content = output_buffer.respond_to?(:to_s) ? output_buffer.to_s : output_buffer.to_str
+  Nokogiri::HTML::DocumentFragment.parse(buffer_content)
 end
 
+# Helper method for RSpec error matchers
+def errors_matcher(method_name)
+  method_name
+end
 
 RSpec.configure do |config|
   config.before(:each) do

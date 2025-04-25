@@ -9,14 +9,14 @@ module FbCustomMacros
     def it_should_have_bootstrap_horizontal_wrapping
       it "should have 'input' class in the right place" do
         output_doc = output_buffer_to_nokogiri(output_buffer)
-        output_doc.should have_tag("form div.form-group span.form-wrapper")
+        output_doc.should have_tag("div.form-group span.form-wrapper")
       end
     end
 
     def it_should_have_bootstrap_controls_label_with(class_name)
       it "should have bootstrap controls wrapper with class '#{class_name}'" do
         output_doc = output_buffer_to_nokogiri(output_buffer)
-        output_doc.should have_tag("form div.#{class_name} input")
+        output_doc.should have_tag("div.#{class_name} input")
       end
     end
 

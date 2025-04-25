@@ -13,14 +13,17 @@ module FormtasticBootstrap
         end
 
         def bootstrap_wrapping(&block)
-          form_group_wrapping do
-            label_html <<
-            template.content_tag(:span, :class => 'form-wrapper') do
-              input_content(&block) <<
-              hint_html(:block) <<
-              error_html(:block)
-            end
+          label_output = label_html
+          input_span_content = template.content_tag(:span, :class => 'form-wrapper') do
+            input_cont = input_content(&block)
+            hint = hint_html(:block)
+            error = error_html(:block)
+            (input_cont + hint + error).html_safe
           end
+          full_output = form_group_wrapping do
+            label_output + input_span_content
+          end
+          full_output
         end
 
         def input_content(&block)
@@ -49,10 +52,13 @@ module FormtasticBootstrap
         end
 
         def form_group_wrapping(&block)
-          template.content_tag(:div,
-            template.capture(&block).html_safe,
-            wrapper_html_options
+          captured_block = template.capture(&block).html_safe
+          options = wrapper_html_options
+          result = template.content_tag(:div,
+            captured_block,
+            options
           )
+          result
         end
 
         def add_on_wrapper_classes(options)

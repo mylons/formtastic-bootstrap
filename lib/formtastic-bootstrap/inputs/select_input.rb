@@ -6,8 +6,9 @@ module FormtasticBootstrap
       include Base::Collections
 
       def to_html
+        effective_input_name = belongs_to_association? ? foreign_key_name : input_name
         bootstrap_wrapping do
-          builder.select(input_name, collection, input_options, input_html_options)
+          builder.select(effective_input_name, collection, input_options, input_html_options)
         end
       end
 
@@ -28,7 +29,13 @@ module FormtasticBootstrap
           opts[:selected] = options[:selected]
         elsif object && object.respond_to?(method) && !object.send(method).blank?
           # Use object's value if available
-          opts[:selected] = object.send(method)
+          if belongs_to_association?
+            # Construct foreign key method name (e.g., :author_id from :author)
+            fk_method = "#{method}_id".to_sym 
+            opts[:selected] = object.send(fk_method) if object.respond_to?(fk_method)
+          else
+             opts[:selected] = object.send(method)
+          end
         end
         
         opts
@@ -121,6 +128,21 @@ module FormtasticBootstrap
           else
             reflection.klass.where({})
           end
+        end
+      end
+
+      # Helper method to get the foreign key name for belongs_to associations
+      def foreign_key_name
+        # Use association_primary_key if defined, otherwise default Rails convention
+        # Note: The logic for association_primary_key itself might need review/simplification later,
+        # but this uses the existing pattern.
+        assoc_key = association_primary_key
+        if assoc_key
+          # If association_primary_key is already the FK (like post_id), use it directly
+          assoc_key
+        else
+          # Otherwise, construct the standard Rails foreign key (like author_id from author)
+          :"#{method}_id"
         end
       end
     end
