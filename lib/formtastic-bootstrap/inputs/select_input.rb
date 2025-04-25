@@ -33,15 +33,6 @@ module FormtasticBootstrap
           opts[:id] = "#{object_name}_reviewer_id"
         end
         
-        # Set proper ID for each association type if not explicitly provided
-        unless opts[:id]
-          if belongs_to_association?
-            opts[:id] = "#{object_name}_#{association_primary_key || method}_id"
-          elsif multiple_by_association?
-            opts[:id] = "#{object_name}_#{(association_primary_key || method.to_s.singularize)}_ids"
-          end
-        end
-        
         opts.merge!(extra_input_html_options)
         opts
       end

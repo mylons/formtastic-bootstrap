@@ -19,8 +19,8 @@ Dir[File.join(File.dirname(__FILE__), "support", "**/*.rb")].each { |f| require 
 
 # Helper method to convert the output buffer to a Nokogiri document
 def output_buffer_to_nokogiri(output_buffer)
-  #Nokogiri::HTML::DocumentFragment.parse(output_buffer)
-  Nokogiri::HTML(output_buffer.to_s)
+  Nokogiri::HTML::DocumentFragment.parse(output_buffer)
+  #Nokogiri::HTML(output_buffer.to_s)
 end
 
 

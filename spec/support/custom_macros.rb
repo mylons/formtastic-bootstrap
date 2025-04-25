@@ -60,11 +60,7 @@ module CustomMacros
     def it_should_have_label_for(element_id)
       it "should have a label for ##{element_id}" do
         output_doc = output_buffer_to_nokogiri(output_buffer)
-        # Modified to support both DOM structures - either direct label or within span.form-label
-        label_exists = output_doc.css("form div.form-group label.control-label[@for='#{element_id}']").any? ||
-                       output_doc.css("form div.form-group label[@for='#{element_id}']").any?
-        
-        expect(label_exists).to be_truthy, "Expected label with for='#{element_id}', but none found"
+        output_doc.should have_tag("form div.form-group label.control-label[@for='#{element_id}']")
       end
     end
 
@@ -85,11 +81,7 @@ module CustomMacros
     def it_should_have_select_with_id(element_id)
       it "should have a select box with id '#{element_id}'" do
         output_doc = output_buffer_to_nokogiri(output_buffer)
-        # Support both possible DOM structures
-        select_exists = output_doc.css("form div.form-group span.form-wrapper select##{element_id}").any? ||
-                        output_doc.css("form div.form-group select##{element_id}").any?
-                        
-        expect(select_exists).to be_truthy, "Expected select with id='#{element_id}', but none found"
+        output_doc.should have_tag("form div.form-group span.form-wrapper select##{element_id}")
       end
     end
 

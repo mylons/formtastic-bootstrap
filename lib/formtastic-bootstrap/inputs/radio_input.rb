@@ -3,6 +3,7 @@ module FormtasticBootstrap
     class RadioInput
       include Base
       include Base::Choices
+      include Base::Collections
 
       # TODO Make sure help blocks work correctly.
 

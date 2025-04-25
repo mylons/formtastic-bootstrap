@@ -207,7 +207,11 @@ RSpec.describe 'select input' do
         concat(builder.input(:author_status, :as => :select))
       end)
 
-      @output_doc.should have_tag('form div.form-group span.form-wrapper select#post_author_status_id')
+
+      # Use standard RSpec matchers
+      select = output_buffer_to_nokogiri(output_buffer).at_css('select#post_author_status_id')
+      expect(select).not_to be_nil
+      expect(select['name']).to eq('post[author_status_id]')
     end
   end
 
@@ -221,7 +225,7 @@ RSpec.describe 'select input' do
     end
 
     it "should call author.find with association conditions" do
-      ::Author.should_receive(:scoped).with(:conditions => {:active => true})
+      ::Author.should_receive(:where).with(:conditions => {:active => true})
 
       semantic_form_for(@new_post) do |builder|
         concat(builder.input(:author, :as => :select))

@@ -240,10 +240,10 @@ RSpec.describe 'radio input' do
       end)
 
       output_doc = output_buffer_to_nokogiri(output_buffer)
-      output_doc.should match(/for="custom_prefix_post_author_ids_(\d+)"/)
-      output_doc.should match(/id="custom_prefix_post_author_ids_(\d+)"/)
+      output_doc.should have_tag("label[@for='custom_prefix_post_author_ids_37']")
+      output_doc.should have_tag("input[@id='custom_prefix_post_author_ids_37']")
+      it_should_have_input_wrapper_with_id("custom_prefix_post_authors_input")
     end
-    it_should_have_input_wrapper_with_id("custom_prefix_post_authors_input")
   end
 
   describe "when index is provided" do
