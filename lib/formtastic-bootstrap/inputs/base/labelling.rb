@@ -30,6 +30,9 @@ module FormtasticBootstrap
             # If a custom id is provided via :input_html, it takes precedence
             if input_opts && input_opts[:id]
               options[:for] = input_opts[:id]
+            # For select inputs with associations, ensure proper ID format
+            elsif is_select_input_with_association?
+              options[:for] = association_input_dom_id
             end
 
             # Adjust classes for Bootstrap
@@ -45,18 +48,39 @@ module FormtasticBootstrap
             begin
               label_options = label_html_options
             rescue => e
+              # Log the error for debugging
+              warn "Error generating label options: #{e.message}\n#{e.backtrace.join("\n")}"
               label_options = {:class => "control-label"} # Minimal fallback
             end
             
             template.content_tag(:span, :class => 'form-label') do
-              begin
-                builder.label(method, label_text, label_options)
-              rescue => e
-                "Label Error".html_safe # Basic error display
-              end
+              builder.label(method, label_text, label_options)
             end
           else
             "".html_safe
+          end
+        end
+        
+        # Check if this is a select input with an association
+        def is_select_input_with_association?
+          self.class.to_s.include?("SelectInput") && reflection
+        end
+        
+        # Generate the proper DOM ID for association-based inputs
+        def association_input_dom_id
+          if reflection && reflection.macro == :belongs_to
+            "#{object_name}_#{association_primary_key || method}_id"
+          elsif reflection && [:has_many, :has_and_belongs_to_many].include?(reflection.macro)
+            "#{object_name}_#{(association_primary_key || method.to_s.singularize)}_ids"
+          else
+            input_dom_id
+          end
+        end
+        
+        # Extract association primary key name (without _id suffix)
+        def association_primary_key
+          if reflection && reflection.macro == :belongs_to
+            method.to_s.sub(/_id$/, '')
           end
         end
 
