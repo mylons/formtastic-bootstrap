@@ -165,6 +165,32 @@ module FormtasticBootstrap
         @reflection ||= builder.reflection_for(method)
       end
 
+      # Add the belongs_to_association? method to properly detect association type
+      def belongs_to_association?
+        reflection && reflection.macro == :belongs_to
+      end
+      
+      # Override choice_input_dom_id to correctly handle belongs_to associations
+      def choice_input_dom_id(choice)
+        attr_name = if belongs_to_association?
+          "#{method}_id"
+        else 
+          association_primary_key || method
+        end
+        
+        [
+          builder.dom_id_namespace,
+          sanitized_object_name,
+          builder.options[:index],
+          attr_name,
+          choice_html_safe_value(choice)
+        ].compact.reject { |i| i.blank? }.join("_")
+      end
+      
+      # Ensure we have a sanitized_object_name method for the choice_input_dom_id
+      def sanitized_object_name
+        object_name.to_s.gsub(/\]\[|[^-a-zA-Z0-9:.]/, "_").sub(/_$/, "")
+      end
     end
   end
 end
