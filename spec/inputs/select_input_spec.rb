@@ -161,6 +161,18 @@ RSpec.describe 'select input' do
          # Stub reviewer association minimally if necessary, assume it doesn't trigger default collection
          allow(::Post).to receive(:reflect_on_association).with(:reviewer)
 
+         # Create some test authors for collection expectations
+         author1 = double('Author', :id => 1, :to_label => 'Author 1')
+         author2 = double('Author', :id => 2, :to_label => 'Author 2')
+         @authors = [author1, author2]
+         
+         allow(::Author).to receive(:all).and_return(@authors)
+         
+         # Set up @bob as the selected author
+         @bob = author1
+         @new_post.stub(:author).and_return(@bob)
+         @new_post.stub(:author_id).and_return(@bob.id)
+                  
          # Expect Author.where for the :author input
          expect(::Author).to receive(:where).with({}).at_least(:once).and_return(@authors || []) 
       end

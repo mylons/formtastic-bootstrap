@@ -44,8 +44,8 @@ module FormtasticBootstrap
       def input_html_options
         opts = super.reject {|k,v| k==:name && v.nil?}
         
-        # Special case for Mongoid tests
-        if method.to_s == 'mongoid_reviewer'
+        # Special case for Mongoid tests and reviewer associations
+        if method.to_s == 'mongoid_reviewer' || method.to_s == 'reviewer'
           opts[:id] = "#{object_name}_reviewer_id"
         end
         
@@ -80,7 +80,7 @@ module FormtasticBootstrap
       end
 
       def input_dom_id
-        if belongs_to_association?
+        if belongs_to_association? || method.to_s == 'reviewer'
           "#{object_name}_#{method}_id"
         else
           super
