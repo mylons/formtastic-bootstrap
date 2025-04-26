@@ -54,6 +54,16 @@ module FormtasticBootstrap
           :class => class_name
         )
       end
+      
+      # Override label_method to give priority to the :label_method option
+      def label_method
+        options[:label_method] || super
+      end
+      
+      # Override value_method to give priority to the :value_method option
+      def value_method
+        options[:value_method] || super
+      end
 
       def choice_label(choice)
         label = if choice.is_a?(Array)
