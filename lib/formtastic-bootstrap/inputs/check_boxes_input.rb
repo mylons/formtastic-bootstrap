@@ -8,8 +8,9 @@ module FormtasticBootstrap
       # TODO Make sure help blocks work correctly.
 
       def to_html
+        # Generate all content within bootstrap_wrapping
         bootstrap_wrapping do
-          hidden_field_for_all << # Now this method will exist
+          hidden_field_for_all <<
           collection.map { |choice|
             choice_html(choice)
           }.join("\n").html_safe
@@ -55,7 +56,15 @@ module FormtasticBootstrap
       end
 
       def choice_label(choice)
-        label = choice.is_a?(Array) ? choice.first : choice
+        label = if choice.is_a?(Array)
+          choice.first
+        elsif choice.respond_to?(:call)
+          choice.call
+        elsif choice.respond_to?(label_method)
+          choice.send(label_method)
+        else
+          choice
+        end
         template.content_tag(:span, ERB::Util.html_escape(label.to_s))
       end
 
