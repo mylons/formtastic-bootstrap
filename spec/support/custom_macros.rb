@@ -395,7 +395,11 @@ module CustomMacros
           # Make the selector more specific to target only the checkboxes in the post_category_name
           # This avoids counting checkboxes from other forms that might be in the output buffer
           # and excludes the hidden input field that otherwise would be counted
-          selector = "div#post_category_name_input span.form-wrapper div.checkbox input[@type='checkbox']"
+          selector = if as == :radio
+            "div#post_category_name_input span.form-wrapper div.radio input[@type='radio']"
+          else
+            "div#post_category_name_input span.form-wrapper div.checkbox input[@type='checkbox']"
+          end
           output_doc.should have_tag(selector, :count => @categories.size)
         end
 
@@ -531,7 +535,12 @@ module CustomMacros
         it 'should use the specified label_method as the label on each item' do
           ::Author.all.each do |author|
             output_doc = output_buffer_to_nokogiri(output_buffer)
-            output_doc.should have_tag("div.#{cd_as}", /#{author.login}/)
+            if as == :radio
+              # For radio buttons, the label content is inside a label.choice element
+              output_doc.should have_tag("div.#{cd_as} label.choice", /#{author.login}/)
+            else
+              output_doc.should have_tag("div.#{cd_as}", /#{author.login}/)
+            end
           end
         end
       end
@@ -544,10 +553,15 @@ module CustomMacros
           end)
         end
 
-        it 'should use the specified label_method as the label on each item' do
+        it 'should use the specified value_method for the input values' do
           ::Author.all.each do |author|
             output_doc = output_buffer_to_nokogiri(output_buffer)
-            output_doc.should have_tag("div.#{cd_as} #{countable}[@value='#{author.login}']")
+            if as == :radio
+              # For radio buttons, the value is in the input element
+              output_doc.should have_tag("div.#{cd_as} input[@type='radio'][@value='#{author.login}']")
+            else
+              output_doc.should have_tag("div.#{cd_as} #{countable}[@value='#{author.login}']")
+            end
           end
         end
       end
