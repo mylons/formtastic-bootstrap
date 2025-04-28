@@ -10,7 +10,7 @@ module FormtasticBootstrap
         
         bootstrap_wrapping do
           if render_as_string?
-            builder.text_field(effective_input_name, input_html_options.merge(:class => 'form-control'))
+            builder.text_field(effective_input_name, form_control_input_html_options)
           else
             builder.select(effective_input_name, collection, input_options, input_html_options)
           end
@@ -173,6 +173,10 @@ module FormtasticBootstrap
 
       def render_as_string?
         options[:as] == :string
+      end
+
+      def form_control_input_html_options
+        input_html_options.merge(:class => [input_html_options[:class], "form-control"].compact.join(" "))
       end
     end
   end
