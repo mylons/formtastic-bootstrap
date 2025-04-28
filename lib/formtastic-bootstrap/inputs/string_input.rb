@@ -4,7 +4,7 @@ module FormtasticBootstrap
       include Base
       include Base::Stringish
       # StringInput in Formtastic 5.0 also includes Base::Placeholder
-      # include Base::Placeholder # Add if needed for placeholder functionality
+      include Base::Placeholder # Required for compatibility with Formtastic 5.0
     end
   end
 end
