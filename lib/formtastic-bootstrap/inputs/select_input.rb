@@ -89,6 +89,23 @@ module FormtasticBootstrap
       end
 
       def input_html_options_name
+        base_name_parts = []
+        base_name_parts << object_name
+        
+        # Handle indexed form fields (like in fields_for with :index option)
+        if builder.options.key?(:index)
+          if multiple?
+            return "#{object_name}[#{builder.options[:index]}][#{association_primary_key || method.to_s.singularize}_ids][]"
+          else
+            if belongs_to_association?
+              return "#{object_name}[#{builder.options[:index]}][#{association_primary_key || method}_id]"
+            else
+              return "#{object_name}[#{builder.options[:index]}][#{association_primary_key || method}]" 
+            end
+          end
+        end
+        
+        # Standard case (no index)
         if multiple?
           "#{object_name}[#{association_primary_key || method.to_s.singularize}_ids][]"
         else

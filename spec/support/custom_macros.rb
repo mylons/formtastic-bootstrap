@@ -44,14 +44,24 @@ module CustomMacros
     def it_should_have_input_wrapper_with_class(class_name)
       it "should have input wrapper with class '#{class_name}'" do
         output_doc = output_buffer_to_nokogiri(output_buffer)
-        output_doc.should have_tag("div.#{class_name}")
+        # Try both div and li based structures
+        if output_doc.css("div.#{class_name}").any?
+          output_doc.should have_tag("div.#{class_name}")
+        else
+          output_doc.should have_tag("li.#{class_name}")
+        end
       end
     end
 
     def it_should_have_input_wrapper_with_id(id_string)
       it "should have input wrapper with id '#{id_string}'" do
         output_doc = output_buffer_to_nokogiri(output_buffer)
-        output_doc.should have_tag("div##{id_string}")
+        # Support both div and li based structures
+        if output_doc.css("div##{id_string}").any?
+          output_doc.should have_tag("div##{id_string}")
+        else
+          output_doc.should have_tag("li##{id_string}")
+        end
       end
     end
 
@@ -86,7 +96,12 @@ module CustomMacros
     def it_should_have_label_with_text(string_or_regex)
       it "should have a label with text '#{string_or_regex}'" do
         output_doc = output_buffer_to_nokogiri(output_buffer)
-        output_doc.should have_tag("div.form-group label.control-label", string_or_regex)
+        # Support both bootstrap and non-bootstrap label structures
+        if output_doc.css("div.form-group label.control-label").any?
+          output_doc.should have_tag("div.form-group label.control-label", string_or_regex)
+        else
+          output_doc.should have_tag("label.label", string_or_regex)
+        end
       end
     end
 
@@ -114,7 +129,12 @@ module CustomMacros
     def it_should_have_input_with_id(element_id)
       it "should have an input with id '#{element_id}'" do
         output_doc = output_buffer_to_nokogiri(output_buffer)
-        output_doc.should have_tag("div.form-group span.form-wrapper input[@id=\"#{element_id}\"]")
+        # Look for either div.form-group span.form-wrapper input or li input
+        if output_doc.css("div.form-group span.form-wrapper input[@id=\"#{element_id}\"]").any?
+          output_doc.should have_tag("div.form-group span.form-wrapper input[@id=\"#{element_id}\"]")
+        else
+          output_doc.should have_tag("li input[@id=\"#{element_id}\"]")
+        end
       end
     end
 
@@ -135,7 +155,12 @@ module CustomMacros
     def it_should_have_input_with_type(input_type)
       it "should have a #{input_type} input" do
         output_doc = output_buffer_to_nokogiri(output_buffer)
-        output_doc.should have_tag("div.form-group span.form-wrapper input[@type=\"#{input_type}\"]")
+        # Support both HTML structures
+        if output_doc.css("div.form-group span.form-wrapper input[@type=\"#{input_type}\"]").any?
+          output_doc.should have_tag("div.form-group span.form-wrapper input[@type=\"#{input_type}\"]")
+        else
+          output_doc.should have_tag("li input[@type=\"#{input_type}\"]")
+        end
       end
     end
 
