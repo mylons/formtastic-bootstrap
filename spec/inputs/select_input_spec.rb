@@ -274,6 +274,7 @@ RSpec.describe 'select input' do
       concat(semantic_form_for(@fred) do |builder|
         concat(builder.input(:posts, :as => :select))
       end)
+      @output_doc = output_buffer_to_nokogiri(output_buffer)
     end
 
     it_should_have_input_wrapper_with_class("select")

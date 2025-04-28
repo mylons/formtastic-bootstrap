@@ -19,6 +19,13 @@ module FormtasticBootstrap
                self.belongs_to_association?
               
               options[:for] = "#{self.object_name}_#{self.method}_id"
+            # Handle has_many associations
+            elsif self.is_a?(FormtasticBootstrap::Inputs::SelectInput) && 
+                  self.respond_to?(:multiple?) && 
+                  self.multiple?
+              
+              # For has_many associations the convention is to use singular_id + s
+              options[:for] = "#{self.object_name}_#{self.method.to_s.singularize}_ids"
             else
               options[:for] = input_dom_id if respond_to?(:input_dom_id)
             end

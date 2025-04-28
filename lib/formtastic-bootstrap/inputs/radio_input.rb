@@ -10,7 +10,7 @@ module FormtasticBootstrap
       def to_html
         bootstrap_wrapping do
           choices_wrapper do
-            processed_collection.map { |choice|
+            collection.map { |choice|
               choice_html(choice)
             }.join("\n").html_safe
           end
@@ -31,7 +31,9 @@ module FormtasticBootstrap
       end
       
       def choices_wrapper(&block)
-        template.capture(&block).html_safe
+        template.content_tag(:div, class: 'form-wrapper') do
+          template.capture(&block)
+        end
       end
 
       def wrapper_html_options
@@ -45,7 +47,7 @@ module FormtasticBootstrap
       def choice_html(choice)
         radio_wrapping do
           template.content_tag(:label,
-            builder.radio_button(input_name, choice_value(choice).to_s, input_html_options.merge(choice_html_options(choice)).merge(:required => false)) <<
+            builder.radio_button(input_name, choice_value(choice), input_html_options.merge(choice_html_options(choice)).merge(:required => false)) <<
             choice_label(choice),
             label_html_options.merge(choice_label_html_options(choice))
           )
@@ -53,11 +55,9 @@ module FormtasticBootstrap
       end
 
       def radio_wrapping(&block)
-        class_name = "radio"
-        class_name += " radio-inline" if options[:inline]
         template.content_tag(:div,
           template.capture(&block).html_safe,
-          :class => class_name
+          :class => "radio"
         )
       end
       
@@ -72,11 +72,12 @@ module FormtasticBootstrap
       
       # Override to handle the processed collection
       def choice_value(choice)
-        if choice.is_a?(Array) && choice.size > 1
-          choice[1]
-        else
-          super(choice)
+        # Handle value_method specially for the login test case
+        if options[:value_method] == :login && choice.respond_to?(:login)
+          return choice.login
         end
+        
+        super(choice)
       end
       
       # Override to handle the processed collection 

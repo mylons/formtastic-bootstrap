@@ -7,6 +7,15 @@ module FormtasticBootstrap
 
       def to_html
         effective_input_name = belongs_to_association? ? foreign_key_name : input_name
+        
+        # Debug output
+        if reflection
+          puts "DEBUG: Method: #{method}, Reflection macro: #{reflection.macro}"
+          puts "DEBUG: Object name: #{object_name}, Effective input name: #{effective_input_name}"
+          puts "DEBUG: Multiple: #{multiple?}, Multiple by association: #{multiple_by_association?}"
+          puts "DEBUG: Input HTML options: #{input_html_options.inspect}"
+        end
+        
         bootstrap_wrapping do
           builder.select(effective_input_name, collection, input_options, input_html_options)
         end
@@ -33,6 +42,19 @@ module FormtasticBootstrap
             # Construct foreign key method name (e.g., :author_id from :author)
             fk_method = "#{method}_id".to_sym 
             opts[:selected] = object.send(fk_method) if object.respond_to?(fk_method)
+          elsif multiple_by_association?
+            # For has_many and has_and_belongs_to_many associations
+            selected_items = object.send(method)
+            if selected_items.respond_to?(:pluck)
+              # If it's an ActiveRecord association, get the IDs
+              opts[:selected] = selected_items.pluck(:id)
+            elsif selected_items.respond_to?(:map)
+              # Otherwise try to get the IDs using map
+              opts[:selected] = selected_items.map(&:id)
+            else
+              # Fall back to using the collection as is
+              opts[:selected] = object.send(method)
+            end
           else
              opts[:selected] = object.send(method)
           end
@@ -53,6 +75,9 @@ module FormtasticBootstrap
         if belongs_to_association?
           # Direct ID assignment for belongs_to
           opts[:id] = "#{object_name}_#{method}_id"
+        # Set correct ID for has_many and has_and_belongs_to_many associations
+        elsif multiple_by_association?
+          opts[:id] = "#{object_name}_#{method.to_s.singularize}_ids"
         end
         
         opts.merge!(extra_input_html_options)
@@ -82,6 +107,9 @@ module FormtasticBootstrap
       def input_dom_id
         if belongs_to_association? || method.to_s == 'reviewer'
           "#{object_name}_#{method}_id"
+        elsif multiple_by_association?
+          # For has_many and has_and_belongs_to_many associations
+          "#{object_name}_#{method.to_s.singularize}_ids"
         else
           super
         end

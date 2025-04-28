@@ -13,16 +13,27 @@ module FormtasticBootstrap
         end
 
         def bootstrap_wrapping(&block)
+          puts "DEBUG: In bootstrap_wrapping for #{self.class.name} with method #{method}"
+          
           label_output = label_html
+          puts "DEBUG: Label output: #{label_output}"
+          
           input_span_content = template.content_tag(:span, :class => 'form-wrapper') do
             input_cont = input_content(&block)
+            puts "DEBUG: Input content: #{input_cont}"
             hint = hint_html(:block)
             error = error_html(:block)
             (input_cont + hint + error).html_safe
           end
+          
+          puts "DEBUG: Input span content: #{input_span_content}"
+          
           full_output = form_group_wrapping do
             label_output + input_span_content
           end
+          
+          puts "DEBUG: Full output: #{full_output.gsub(/\n/, '\\n')}"
+          
           full_output
         end
 
