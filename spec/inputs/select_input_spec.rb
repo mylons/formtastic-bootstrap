@@ -549,6 +549,8 @@ RSpec.describe 'select input' do
       concat(semantic_form_for(@freds_post, :namespace => 'context2') do |builder|
         concat(builder.input(:authors, :as => :select))
       end)
+      puts "Debug namespace test: HTML structure: "
+      puts output_buffer.to_s
     end
     it_should_have_input_wrapper_with_id("context2_post_authors_input")
     it_should_have_select_with_id("context2_post_author_ids")
@@ -566,6 +568,8 @@ RSpec.describe 'select input' do
           concat(author.input(:name, :as => :select))
         end)
       end)
+      puts "Debug index test: HTML structure: "
+      puts output_buffer.to_s
     end
 
     it 'should index the id of the form-group' do
@@ -580,6 +584,8 @@ RSpec.describe 'select input' do
 
     it 'should index the name of the select' do
       output_doc = output_buffer_to_nokogiri(output_buffer)
+      puts "Debug index test select output: "
+      puts output_doc.css("select").to_s
       output_doc.should have_tag("select[@name='post[author_attributes][3][name]']")
     end
 

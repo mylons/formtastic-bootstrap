@@ -71,10 +71,10 @@ module FormtasticBootstrap
         # Always set correct ID for belongs_to associations
         if belongs_to_association?
           # Direct ID assignment for belongs_to
-          opts[:id] = "#{object_name}_#{method}_id"
+          opts[:id] = "#{builder.dom_id_namespace}_#{object_name}_#{method}_id".gsub(/^_/, '')
         # Set correct ID for has_many and has_and_belongs_to_many associations
         elsif multiple_by_association?
-          opts[:id] = "#{object_name}_#{method.to_s.singularize}_ids"
+          opts[:id] = "#{builder.dom_id_namespace}_#{object_name}_#{method.to_s.singularize}_ids".gsub(/^_/, '')
         end
         
         opts.merge!(extra_input_html_options)
