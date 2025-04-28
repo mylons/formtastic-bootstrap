@@ -8,14 +8,6 @@ module FormtasticBootstrap
       def to_html
         effective_input_name = belongs_to_association? ? foreign_key_name : input_name
         
-        # Debug output
-        if reflection
-          puts "DEBUG: Method: #{method}, Reflection macro: #{reflection.macro}"
-          puts "DEBUG: Object name: #{object_name}, Effective input name: #{effective_input_name}"
-          puts "DEBUG: Multiple: #{multiple?}, Multiple by association: #{multiple_by_association?}"
-          puts "DEBUG: Input HTML options: #{input_html_options.inspect}"
-        end
-        
         bootstrap_wrapping do
           builder.select(effective_input_name, collection, input_options, input_html_options)
         end
