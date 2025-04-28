@@ -405,7 +405,7 @@ RSpec.describe 'select input' do
     end
 
     it 'should have a select with prompt' do
-      @output_doc.should have_tag("form div.form-group span.form-wrapper select option[@value='']", /choose author/, :count => 1)
+      @output_doc.should have_tag("form div.form-group span.form-wrapper select option[@value='']", :text => /choose author/, :count => 1)
     end
 
     it 'should not have a second blank select option' do
@@ -521,9 +521,11 @@ RSpec.describe 'select input' do
       before do
         # Should not be a case, but just checking :as got highest priority in setting input type.
         concat(semantic_form_for(@new_post) do |builder|
+          puts "Debug: options for first form: #{builder.input(:meta_description, :as => :string, :collection => @some_meta_descriptions).inspect}"
           concat(builder.input(:meta_description, :as => :string, :collection => @some_meta_descriptions))
         end)
         concat(semantic_form_for(:project, :url => 'http://test.host') do |builder|
+          puts "Debug: options for second form: #{builder.input(:meta_description, :as => :string, :collection => @some_meta_descriptions).inspect}"
           concat(builder.input(:meta_description, :as => :string, :collection => @some_meta_descriptions))
         end)
       end

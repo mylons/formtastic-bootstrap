@@ -9,7 +9,11 @@ module FormtasticBootstrap
         effective_input_name = belongs_to_association? ? foreign_key_name : input_name
         
         bootstrap_wrapping do
-          builder.select(effective_input_name, collection, input_options, input_html_options)
+          if render_as_string?
+            builder.text_field(effective_input_name, input_html_options.merge(:class => 'form-control'))
+          else
+            builder.select(effective_input_name, collection, input_options, input_html_options)
+          end
         end
       end
 
@@ -23,7 +27,8 @@ module FormtasticBootstrap
 
       def input_options
         opts = super
-        opts.merge!(:include_blank => include_blank)
+        # Only include blank if there's no prompt option
+        opts.merge!(:include_blank => include_blank) unless options[:prompt]
         
         # Fix selected option handling
         if options[:selected]
@@ -164,6 +169,10 @@ module FormtasticBootstrap
           # Otherwise, construct the standard Rails foreign key (like author_id from author)
           :"#{method}_id"
         end
+      end
+
+      def render_as_string?
+        options[:as] == :string
       end
     end
   end
