@@ -25,10 +25,10 @@ RSpec.describe 'password input' do
   it_should_have_input_with_type(:password)
   it_should_have_input_with_name("post[title]")
   it_should_have_maxlength_matching_column_limit
-  it_should_use_default_text_field_size_when_not_nil(:string)
-  it_should_not_use_default_text_field_size_when_nil(:string)
-  it_should_apply_custom_input_attributes_when_input_html_provided(:string)
-  it_should_apply_custom_for_to_label_when_input_html_id_provided(:string)
+  it_should_use_default_text_field_size_when_not_nil(:password)
+  it_should_not_use_default_text_field_size_when_nil(:password)
+  it_should_apply_custom_input_attributes_when_input_html_provided(:password)
+  it_should_apply_custom_for_to_label_when_input_html_id_provided(:password)
   it_should_apply_error_logic_for_input_type(:password)
 
   describe "when no object is provided" do

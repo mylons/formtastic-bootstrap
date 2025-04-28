@@ -16,16 +16,11 @@ RSpec.describe 'check_boxes input' do
 
         output_doc = output_buffer_to_nokogiri(form)
 
-        puts "Full generated HTML:"
-        puts output_doc.to_html
-
         labels = output_doc.css('div.check_boxes.form-group span.form-wrapper label.choice')
-        puts "Number of labels found: #{labels.size}"
 
         expect(labels.size).to eq(2)
 
         labels.each_with_index do |label, index|
-          puts "Label #{index + 1} inner_html: #{label.inner_html}"
           expect(label.inner_html).to include('&lt;b&gt;Item')
           expect(label.inner_html).to include("Item #{index + 1}")
         end

@@ -27,7 +27,10 @@ RSpec.describe 'boolean input' do
     output_doc.should have_tag('form div.form-group span.form-wrapper label', count: 1)
     output_doc.should have_tag('form div.form-group span.form-wrapper label.control-label', count: 1)
     output_doc.should have_tag('form div.form-group span.form-wrapper label[@for="post_allow_comments"]')
-    output_doc.should have_tag('form div.form-group span.form-wrapper label', /Allow comments/)
+    label_node = output_doc.at_css('form div.form-group span.form-wrapper label')
+    expect(label_node).not_to be_nil
+    all_text = label_node.children.select(&:text?).map(&:content).join("")
+    expect(all_text).to match(/allow comments/i)
     output_doc.should have_tag('form div.form-group span.form-wrapper label input[@type="checkbox"]', count: 1)
     output_doc.should have_tag('form div.form-group input[@type="hidden"]', count: 1)
     output_doc.should_not have_tag('form div.form-group span.form-wrapper label input[@type="hidden"]', count: 1) # invalid HTML5

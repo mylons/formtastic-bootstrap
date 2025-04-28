@@ -4,26 +4,29 @@ RSpec.describe 'deprecated time, datetime and date inputs' do
   include FormtasticSpecHelper
 
   before do
-@output_buffer = ActionView::OutputBuffer.new
+    @output_buffer = ActionView::OutputBuffer.new
     mock_everything
+    # Using a deprecation instance in tests
+    @deprecator = ActiveSupport::Deprecation.new
+    allow(ActiveSupport::Deprecation).to receive(:new).and_return(@deprecator)
   end
 
   it 'should warn :time is deprecated' do
-    ::ActiveSupport::Deprecation.should_receive(:warn)
+    expect(@deprecator).to receive(:warn)
     semantic_form_for(@new_post) do |f|
       concat(f.input :created_at, :as => :time)
     end
   end
 
   it 'should warn :datetime is deprecated' do
-    ::ActiveSupport::Deprecation.should_receive(:warn)
+    expect(@deprecator).to receive(:warn)
     semantic_form_for(@new_post) do |f|
       concat(f.input :created_at, :as => :datetime)
     end
   end
 
   it 'should warn :date is deprecated' do
-    ::ActiveSupport::Deprecation.should_receive(:warn)
+    expect(@deprecator).to receive(:warn)
     semantic_form_for(@new_post) do |f|
       concat(f.input :created_at, :as => :date)
     end

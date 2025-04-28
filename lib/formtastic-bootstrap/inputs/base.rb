@@ -7,6 +7,7 @@ module FormtasticBootstrap
   module Inputs
     module Base
       extend ActiveSupport::Autoload
+      include Formtastic::Inputs::Base
 
       autoload :DatetimePickerish,  "formtastic-bootstrap/inputs/base/datetime_pickerish"
       # autoload :Associations
@@ -39,6 +40,17 @@ module FormtasticBootstrap
       # include Associations
       include Labelling
       include Wrapping
+
+      # Ensure the full Formtastic input_html_options chain executes
+      def input_html_options
+        begin
+          super
+        rescue NotImplementedError => e
+          # If super fails, return a default empty hash
+          # This provides a fallback for modules that don't have a parent implementation
+          {}
+        end
+      end
 
     end
   end

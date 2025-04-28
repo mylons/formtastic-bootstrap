@@ -1,7 +1,8 @@
 module FormtasticBootstrap
   module Inputs
-    class CountryInput < Formtastic::Inputs::CountryInput
+    class CountryInput
       include Base
+      include Base::Collections
 
       def to_html
         bootstrap_wrapping do

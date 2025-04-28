@@ -1,6 +1,6 @@
 module FormtasticBootstrap
   module Inputs
-    class NumberInput < Formtastic::Inputs::NumberInput
+    class NumberInput
       include Base
       include Base::Numeric
 
@@ -10,6 +10,11 @@ module FormtasticBootstrap
         end
       end
 
+      def input_html_options
+        super.tap do |options|
+          options[:step] ||= "any"
+        end
+      end
     end
   end
 end

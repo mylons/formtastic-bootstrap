@@ -1,8 +1,10 @@
 module FormtasticBootstrap
   module Inputs
-    class SearchInput < Formtastic::Inputs::SearchInput
+    class SearchInput
       include Base
       include Base::Stringish
+      # Formtastic 5.0 SearchInput also includes Base::Placeholder
+      # include Base::Placeholder # Add if needed
 
       def to_html
         bootstrap_wrapping do

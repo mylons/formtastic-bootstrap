@@ -1,1 +1,1 @@
-/Users/michaellyons/.rvm/gems/ruby-3.1.5/gems/formtastic-4.0.0/spec/schema.rb
+/Users/michaellyons/.local/share/mise/installs/ruby/3.2.8/lib/ruby/gems/3.2.0/gems/formtastic-5.0.0/spec/schema.rb

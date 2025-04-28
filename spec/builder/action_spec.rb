@@ -283,18 +283,40 @@ RSpec.describe 'FormtasticBootstrap::FormBuilder#action' do
     end
 
     describe 'when a top-level (custom) action class exists' do
-      it "should instantiate the top-level action instead of the Formtastic one" do
-        class ::ButtonAction < Formtastic::Actions::ButtonAction
-        end
+      # Define custom action classes locally for this context only
+      before(:each) do
+        # Define ButtonAction
+        stub_const("ButtonAction", Class.new(Formtastic::Actions::ButtonAction) do
+          def to_html
+            template.content_tag(:button, :class => "spec-test-button") { wrapper.text }
+          end
+        end)
 
-        action = double('action', :to_html => 'some HTML')
-        FormtasticBootstrap::Actions::ButtonAction.should_not_receive(:new)
-        ::ButtonAction.should_receive(:new).and_return(action)
+        # Define LinkAction (if needed for tests in this block)
+        # stub_const("LinkAction", Class.new(Formtastic::Actions::LinkAction) do ... end)
 
+        # Define InputAction (if needed for tests in this block)
+        # stub_const("InputAction", Class.new(Formtastic::Actions::InputAction) do ... end)
+      end
+
+      it "should instantiate the top-level ButtonAction instead of the FormtasticBootstrap one" do
+        action_instance = double('action_instance', :to_html => 'some HTML')
+
+        # Expect the *original* FormtasticBootstrap class NOT to be called
+        expect(FormtasticBootstrap::Actions::ButtonAction).not_to receive(:new)
+
+        # Expect our locally defined ButtonAction to be instantiated
+        expect(ButtonAction).to receive(:new).and_return(action_instance)
+
+        # Run the form builder
         concat(semantic_form_for(@new_post) do |builder|
           builder.action(:commit, :as => :button)
         end)
       end
+
+      # Add similar tests here for LinkAction and InputAction if they
+      # need to be tested for custom top-level class behavior.
+
     end
 
     describe 'support for :as on each action' do

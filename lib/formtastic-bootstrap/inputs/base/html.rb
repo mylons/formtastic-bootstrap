@@ -3,24 +3,17 @@ module FormtasticBootstrap
     module Base
       module Html
 
+        include Formtastic::Inputs::Base
         include Formtastic::Inputs::Base::Html
-
+        
         def form_control_input_html_options
-          orig_class = input_html_options[:class]
+          # Fetch original options containing :input_html attrs
+          orig_options = input_html_options 
+          orig_class = orig_options[:class] 
+          # Combine original class with form-control
           new_class = [orig_class, "form-control"].compact.join(" ")
-          input_html_options.merge(:class => new_class)
-        end
-
-        def input_html_options
-          Rails.application.deprecators.suppress do
-            if errors?
-              {
-                :class => "error"
-              }.merge(super)
-            else
-                super
-            end
-          end
+          # Merge the new class string back into the *original* options hash
+          orig_options.merge(:class => new_class)
         end
 
       end
