@@ -379,15 +379,6 @@ module CustomMacros
           end)
           output_doc = output_buffer_to_nokogiri(output_buffer)
           
-          # Clean up debugging - remove verbose debug output
-          # puts "DEBUG PRE-RENDER: inline_errors setting = #{Formtastic::FormBuilder.inline_errors.inspect}"
-          # puts "DEBUG PRE-RENDER: Errors on object = #{@new_post.errors.inspect}"
-          # puts "DEBUG PRE-RENDER: title errors = #{@new_post.errors[:title].inspect}"
-          # puts "DEBUG FULL HTML OUTPUT: #{output_buffer.to_s}"
-          # puts "DEBUG OUTPUT DOC: #{output_doc.to_s}"
-          # puts "DEBUG ERROR SELECTORS: div.has-error=#{output_doc.css('div.has-error').size}, div.error=#{output_doc.css('div.error').size}, li.error=#{output_doc.css('li.error').size}"
-          # puts "DEBUG ERROR MESSAGES: span.help-block=#{output_doc.css('span.help-block').size}, span.help-inline=#{output_doc.css('span.help-inline').size}, p.inline-errors=#{output_doc.css('p.inline-errors').size}, p.help-inline=#{output_doc.css('p.help-inline').size}"
-          # puts "DEBUG ERROR CONTENT: #{output_doc.css('.has-error, .error').to_s}"
           
           # Look for error messages anywhere they might be displayed
           error_exists = false

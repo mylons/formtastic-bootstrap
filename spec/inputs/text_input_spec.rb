@@ -46,7 +46,6 @@ RSpec.describe 'text input' do
       concat(builder.input(:title, :as => :text, :input_html => { :cols => nil }))
     end)
     output_doc = output_buffer_to_nokogiri(output_buffer)
-    puts "DEBUG NIL COLS TEST HTML: #{output_buffer}"
     # Check for textarea#post_title specifically
     output_doc.css("textarea#post_title[@cols]").should be_empty
   end
@@ -65,7 +64,6 @@ RSpec.describe 'text input' do
       concat(builder.input(:title, :as => :text, :input_html => { :rows => nil }))
     end)
     output_doc = output_buffer_to_nokogiri(output_buffer)
-    puts "DEBUG NIL ROWS TEST HTML: #{output_buffer}"
     # Check for textarea#post_title specifically
     output_doc.css("textarea#post_title[@rows]").should be_empty
   end
@@ -155,9 +153,6 @@ RSpec.describe 'text input' do
           concat(builder.input(:title, :as => :text))
         end)
         output_doc = output_buffer_to_nokogiri(output_buffer)
-        # Add debugging for better visibility
-        puts "DEBUG ROWS TEST HTML: #{output_buffer}"
-        puts "DEBUG ROWS CSS MATCHES: form div.form-group span.form-wrapper textarea=#{output_doc.css('form div.form-group span.form-wrapper textarea').size}, textarea[@rows='12']=#{output_doc.css('textarea[@rows="12"]').size}"
         # Check for both possible HTML structures
         if output_doc.css("form div.form-group span.form-wrapper textarea").any?
           output_doc.should have_tag("form div.form-group span.form-wrapper textarea[@rows='12']")
@@ -173,7 +168,6 @@ RSpec.describe 'text input' do
           concat(builder.input(:title, :as => :text))
         end)
         output_doc = output_buffer_to_nokogiri(output_buffer)
-        puts "DEBUG DEFAULT NIL ROWS TEST HTML: #{output_buffer}"
         # Check for textarea#post_title specifically
         output_doc.css("textarea#post_title[@rows]").should be_empty
       end
@@ -191,9 +185,6 @@ RSpec.describe 'text input' do
           concat(builder.input(:title, :as => :text))
         end)
         output_doc = output_buffer_to_nokogiri(output_buffer)
-        # Add debugging for better visibility
-        puts "DEBUG COLS TEST HTML: #{output_buffer}"
-        puts "DEBUG COLS CSS MATCHES: form div.form-group span.form-wrapper textarea=#{output_doc.css('form div.form-group span.form-wrapper textarea').size}, textarea[@cols='10']=#{output_doc.css('textarea[@cols="10"]').size}"
         # Check for both possible HTML structures
         if output_doc.css("form div.form-group span.form-wrapper textarea").any?
           output_doc.should have_tag("form div.form-group span.form-wrapper textarea[@cols='10']")
@@ -209,7 +200,6 @@ RSpec.describe 'text input' do
           concat(builder.input(:title, :as => :text))
         end)
         output_doc = output_buffer_to_nokogiri(output_buffer)
-        puts "DEBUG DEFAULT NIL COLS TEST HTML: #{output_buffer}"
         # Check for textarea#post_title specifically
         output_doc.css("textarea#post_title[@cols]").should be_empty
       end

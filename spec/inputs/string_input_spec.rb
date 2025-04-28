@@ -56,8 +56,6 @@ RSpec.describe 'string input' do
         end)
         
         @output_doc = output_buffer_to_nokogiri(output_buffer)
-        puts "DEBUG DIRECT ERROR HTML: #{output_buffer}"
-        puts "DEBUG DIRECT ERROR SELECTORS: div.has-error=#{@output_doc.css('div.has-error').size}, span.help-block=#{@output_doc.css('span.help-block').size}"
       end
       
       it "should display error messages" do
@@ -96,9 +94,6 @@ RSpec.describe 'string input' do
           end)
           output_doc = output_buffer_to_nokogiri(output_buffer)
           
-          # For debugging
-          # puts "DEBUG MAXLENGTH HTML: #{output_buffer.to_s}"
-          # puts "DEBUG MAXLENGTH SELECTOR: input##{@new_post.class.name.underscore}_title[@maxlength='#{maxlength}'] found: #{output_doc.css("input##{@new_post.class.name.underscore}_title[maxlength='#{maxlength}']").size}"
           
           # Make the selector more flexible to work with different form structures
           if output_doc.css("form div.form-group span.form-wrapper input##{@new_post.class.name.underscore}_title[@maxlength='#{maxlength}']").any?
