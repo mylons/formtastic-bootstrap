@@ -12,7 +12,7 @@ module FormtasticBootstrap
         end
 
         def input_html_options
-          Rails.application.deprecators.suppress do
+          ActiveSupport::Deprecation.silence do
             if errors?
               {
                 :class => "error"
